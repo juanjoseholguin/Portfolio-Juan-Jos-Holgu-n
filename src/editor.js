@@ -1,4 +1,5 @@
-import '@fontsource-variable/instrument-sans/wght.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
 
 const form = document.getElementById('form');
 const statusEl = document.getElementById('status');

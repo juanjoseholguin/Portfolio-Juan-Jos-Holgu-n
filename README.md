@@ -1,6 +1,6 @@
 # Portafolio de Juan José Holguín
 
-Portafolio 3D que se recorre deslizando. Los proyectos llegan solos desde Behance.
+Portafolio 3D interactivo que se recorre deslizando, con personajes, monedas, dado, bolas de habilidades con física y cuatro estilos visuales (3D, Pixel, Toon y Wireframe). Los proyectos llegan solos desde Behance.
 
 ## Empezar
 
@@ -19,10 +19,10 @@ Abre un editor en el navegador para cambiar tu presentación, premios, experienc
 
 ## Proyectos de Behance
 
-El usuario de Behance se define en `behanceUsername`. `npm run sync` descarga títulos, descripciones, estadísticas y portadas desde el perfil público y el feed RSS, sin claves ni inicio de sesión.
+El usuario se define en `behanceUsername`. `npm run sync` trae los proyectos más recientes desde el perfil público y el feed RSS, sin claves, y conserva los anteriores en `public/data/projects.json`.
 
-En GitHub, el flujo `.github/workflows/deploy.yml` sincroniza y publica con cada cambio y una vez al día, así que un proyecto nuevo en Behance aparece en el sitio al día siguiente. También se puede lanzar a mano desde la pestaña Actions.
+El flujo `.github/workflows/sync.yml` lo ejecuta una vez al día y guarda los cambios; cada cambio en `main` se publica en Vercel. Para ocultar un proyecto, desmárcalo en el editor. `featuredCount` y `featuredIds` en `profile.json` eligen cuáles salen en la pista 3D; todos aparecen en la cuadrícula.
 
-## Publicar
+## Atajos
 
-En el repositorio, entra en Settings, Pages, y elige GitHub Actions como fuente.
+Las teclas 1 a 4 cambian el estilo y R lanza el dado.

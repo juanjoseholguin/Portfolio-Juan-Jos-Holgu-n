@@ -5,8 +5,8 @@
   --yellow: #ffc629;
   --red: #ff4b33;
   --white: #ffffff;
-  --display: 'Bodoni Moda Variable', 'Bodoni 72', Didot, serif;
-  --text: 'Instrument Sans Variable', system-ui, sans-serif;
+  --display: Poppins, system-ui, sans-serif;
+  --text: Poppins, system-ui, sans-serif;
   --gutter: clamp(16px, 4vw, 56px);
 }
 
@@ -16,7 +16,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--fg);
-  font: 400 1.0625rem/1.55 var(--text);
+  font: 400 1rem/1.6 var(--text);
   overflow-x: clip;
   transition: color 0.4s;
 }
@@ -65,18 +65,17 @@ main { position: relative; }
 .hero .pin { justify-content: center; text-align: center; color: var(--white); }
 .hero h1 {
   margin: 0;
-  font: italic 500 clamp(3rem, min(9.4vw, 17vh), 9.5rem) / 0.96 var(--display);
+  font: 700 clamp(2.75rem, min(7.4vw, 14vh), 7.5rem) / 1 var(--display);
   max-width: 6.2em;
   margin-inline: auto;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 .hero p { margin: 0.9em 0 0; font-size: clamp(1.0625rem, 1.7vw, 1.5rem); }
 .hint {
   position: absolute;
-  inset: auto 0 28px;
-  text-align: center;
-  color: var(--white);
+  inset: auto auto 24px var(--gutter);
+  color: var(--ink);
   font-size: 0.9375rem;
 }
 
@@ -85,12 +84,12 @@ main { position: relative; }
 .statement p {
   margin: 0;
   max-width: 17em;
-  font: italic 500 clamp(2.25rem, 5.6vw, 5.75rem) / 1.06 var(--display);
-  letter-spacing: -0.015em;
+  font: 700 clamp(2rem, 4.6vw, 4.75rem) / 1.08 var(--display);
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
 
-.stop { height: 150vh; }
+.stop { height: 170vh; }
 .stop .copy {
   width: min(33vw, 27rem);
   padding: 18px 20px 22px;
@@ -101,7 +100,7 @@ main { position: relative; }
 .stop.right .pin { justify-content: flex-end; }
 .stop h3, .award h3 {
   margin: 0;
-  font: italic 500 clamp(2rem, 3.7vw, 3.75rem) / 1.04 var(--display);
+  font: 700 clamp(1.75rem, 2.9vw, 3rem) / 1.08 var(--display);
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
@@ -134,7 +133,7 @@ main { position: relative; }
 .award { height: 170vh; }
 .award .copy { width: min(38vw, 32rem); }
 .award .prize { margin: 0 0 0.6em; color: var(--yellow); font-weight: 600; }
-.award h3 { font-size: clamp(2.5rem, 5vw, 5rem); }
+.award h3 { font-size: clamp(2.25rem, 4.2vw, 4.25rem); }
 .award .btn { background: var(--yellow); color: var(--ink); box-shadow: 0 4px 0 #b98700; }
 .award .btn:hover { box-shadow: 0 2px 0 #b98700; }
 
@@ -143,7 +142,7 @@ main { position: relative; }
 .about .copy { width: min(42vw, 36rem); }
 .section-title {
   margin: 0;
-  font: italic 500 clamp(2.5rem, 5vw, 5rem) / 1 var(--display);
+  font: 700 clamp(2.5rem, 5vw, 5rem) / 1 var(--display);
   letter-spacing: -0.015em;
 }
 .about-text { margin: 0.8em 0 0; }
@@ -187,7 +186,7 @@ main { position: relative; }
 .contact { min-height: 170vh; }
 .contact .copy { width: min(42vw, 36rem); }
 .contact-links { list-style: none; margin: 1.2em 0 0; padding: 0; display: grid; gap: 0.2em; }
-.contact-links a { font: italic 500 clamp(1.5rem, 2.6vw, 2.5rem) / 1.25 var(--display); }
+.contact-links a { font: 700 clamp(1.5rem, 2.6vw, 2.5rem) / 1.25 var(--display); }
 .colophon { margin: 2em 0 0; color: var(--soft); font-size: 0.875rem; }
 
 dialog {
@@ -203,7 +202,7 @@ dialog {
 dialog::backdrop { background: rgb(12 14 43 / 0.72); }
 dialog img { display: block; width: 100%; height: auto; }
 .dialog-body { padding: clamp(20px, 4vw, 40px); }
-.dialog-body h2 { margin: 0; font: italic 500 clamp(2rem, 4vw, 3.25rem) / 1.05 var(--display); }
+.dialog-body h2 { margin: 0; font: 700 clamp(2rem, 4vw, 3.25rem) / 1.05 var(--display); }
 .dialog-body .description { white-space: pre-line; max-width: 65ch; }
 .dialog-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 0.4em; }
 .close { all: unset; cursor: pointer; margin-top: 1.2em; text-decoration: underline; text-underline-offset: 4px; }
@@ -225,6 +224,71 @@ dialog img { display: block; width: 100%; height: auto; }
   .summary { -webkit-line-clamp: 2; }
   .contact .pin { align-items: flex-end; padding-bottom: 28px; }
   .about .pin { align-items: flex-start; padding-top: 84px; }
-  .hero h1 { font-size: clamp(3rem, 15vw, 5.5rem); }
+  .hero h1 { font-size: clamp(2.75rem, 13vw, 4.75rem); }
+  .hint { inset: auto 0 24px; text-align: center; color: var(--white); }
   .tile:hover img { transform: none; }
+}
+
+/* Barra del juego */
+.hud { position: fixed; z-index: 6; left: 50%; bottom: 16px; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); }
+.hud-toggle { display: none; }
+.hud-panel {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; align-items: center;
+  padding: 7px 10px; border-radius: 18px;
+  background: var(--ink); color: var(--white);
+  box-shadow: 0 5px 0 #000;
+  font-size: 0.8125rem;
+}
+.hud-group { display: flex; align-items: center; gap: 3px; }
+.hud-label { margin-right: 5px; color: #aab0ee; }
+.hud button {
+  min-height: 32px; padding: 4px 10px; border: 0; border-radius: 10px;
+  background: transparent; color: inherit; font: 600 0.8125rem/1.1 var(--text); cursor: pointer;
+}
+.hud button:hover { background: #262a66; }
+.hud button[aria-pressed='true'] { background: var(--yellow); color: var(--ink); }
+.hud .roll { background: var(--red); color: var(--ink); }
+.hud .roll:hover { background: #ff7a66; }
+.coins { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.coin-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--yellow); box-shadow: inset -2px -2px 0 #c28f00; }
+.say {
+  position: fixed; z-index: 6; left: 50%; bottom: 76px; margin: 0; max-width: min(90vw, 480px);
+  padding: 8px 14px; border-radius: 12px; background: var(--white); color: var(--ink);
+  font-weight: 600; font-size: 0.875rem; text-align: center;
+  transform: translate(-50%, 8px); opacity: 0; pointer-events: none; transition: opacity 0.18s, transform 0.18s;
+}
+.say.on { opacity: 1; transform: translate(-50%, 0); }
+.wipe { position: fixed; z-index: 4; inset: 0; background: var(--yellow); transform: scaleY(0); pointer-events: none; }
+.wipe.run { animation: wipe 0.48s steps(9) both; }
+@keyframes wipe {
+  0% { transform: scaleY(0); transform-origin: bottom; }
+  50% { transform: scaleY(1); transform-origin: bottom; }
+  50.01% { transform: scaleY(1); transform-origin: top; }
+  100% { transform: scaleY(0); transform-origin: top; }
+}
+@media (prefers-reduced-motion: reduce) { .say { transition: none; } }
+
+/* Tipografía según el estilo */
+body[data-style='pixel'] :is(h1, h2, h3, .statement p, .contact-links a) {
+  font-family: 'Pixelify Sans Variable', Poppins, sans-serif; letter-spacing: 0; font-weight: 600;
+}
+body[data-style='pixel'] .btn, body[data-style='pixel'] .hud-panel, body[data-style='pixel'] .stop .copy { border-radius: 0; }
+body[data-style='pixel'] .hud button { border-radius: 0; }
+body[data-style='toon'] .hero h1, body[data-style='toon'] .statement p { text-shadow: 0.06em 0.06em 0 var(--ink); }
+body[data-style='toon'] .stop .copy { border: 3px solid var(--ink); background: var(--white); box-shadow: 5px 5px 0 var(--ink); backdrop-filter: none; }
+body[data-style='wire'] :is(.statement p, .award h3, .section-title) {
+  color: transparent; -webkit-text-stroke: 1.4px var(--fg);
+}
+body[data-style='wire'] .statement p { -webkit-text-stroke-color: var(--white); }
+body[data-style='wire'] .stop .copy { background: rgb(228 231 251 / 0.92); border: 1px dashed var(--ultra); backdrop-filter: none; }
+
+@media (max-width: 760px) {
+  .hud { left: auto; right: var(--gutter); bottom: auto; top: 48px; transform: none; width: auto; }
+  .hud-toggle { display: block; margin-left: auto; background: var(--ink) !important; color: var(--white) !important; box-shadow: 0 3px 0 #000; }
+  .hud-panel { display: none; margin-top: 8px; flex-direction: column; align-items: stretch; width: min(92vw, 340px); }
+  .hud.open .hud-panel { display: flex; }
+  .hud-group { flex-wrap: wrap; }
+  .hud-label { width: 100%; }
+  .say { top: 92px; bottom: auto; }
+  .stop .copy { padding: 14px 16px 18px; }
 }

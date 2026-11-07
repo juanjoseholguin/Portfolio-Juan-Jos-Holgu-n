@@ -103,10 +103,9 @@ async function main() {
     .readFile(path.join(dataDir, 'projects.json'), 'utf8')
     .then((text) => JSON.parse(text).projects)
     .catch(() => []);
-  const oldest = merged.at(-1)?.publishedOn ?? 0;
   if (pageItems.length >= 12 && previous.length) {
     const seen = new Set(merged.map((p) => p.id));
-    merged.push(...previous.filter((p) => !seen.has(p.id) && p.publishedOn < oldest));
+    merged.push(...previous.filter((p) => !seen.has(p.id)));
   }
 
   if (!merged.length) {

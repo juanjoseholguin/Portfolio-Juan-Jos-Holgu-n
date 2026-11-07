@@ -1,31 +1,36 @@
 {
-  "behanceUsername": "juanjoseholguin",
+  "behanceUsername": "juanjoholgun1",
   "name": "Juan José Holguín",
-  "role": "Diseñador UI/UX",
+  "role": "UI/UX Designer",
   "location": "Cali, Colombia",
-  "statement": "Mezclo arte y lógica para crear historias que puedes tocar, deslizar y sentir.",
-  "about": "Diseño experiencias digitales claras y con personalidad. Animo en After Effects, ilustro en Illustrator y Photoshop, y prototipo apps en Figma. También programo en JavaScript, TypeScript y React, y estoy aprendiendo Python.",
+  "statement": "I blend art and logic to create stories you can click, swipe, and feel.",
+  "about": "I design clear digital experiences with personality. I animate in After Effects, illustrate in Illustrator and Photoshop, and prototype apps in Figma. I also code in JavaScript, TypeScript, and React, and I am learning Python.",
   "awards": [
     {
-      "prize": "Premio Equinoccio",
-      "title": "Mejor diseño audiovisual",
-      "detail": "",
-      "year": "",
-      "url": "",
-      "icon": "film"
-    },
-    {
-      "prize": "Premio Equinoccio",
-      "title": "Mejor diseño en juego de mesa",
-      "detail": "Por Carrera a la Locura, un juego de carreras con personajes hechos de objetos cotidianos.",
-      "year": "",
+      "prize": "Premio Equinoccio Icesi",
+      "title": "Best Visual Design",
+      "detail": "For Carrera a la Locura, a board game built with basic code and NFC.",
+      "year": "2026",
       "url": "https://www.behance.net/gallery/256507675/Carrera-a-la-locura-Board-Game",
       "icon": "die"
+    },
+    {
+      "prize": "Premio Equinoccio Icesi",
+      "title": "Best Audiovisual Design",
+      "detail": "For Besos de Vino, a stop-motion animated poem.",
+      "year": "2025",
+      "url": "https://www.behance.net/gallery/221578125/StopMotion-%28Animation%29-Poema-Besos-de-Vino",
+      "icon": "film"
     }
   ],
   "experience": [
     {
-      "role": "Diseño de medios interactivos",
+      "role": "Student committee member",
+      "org": "Interactive Media Design program, Universidad Icesi",
+      "period": ""
+    },
+    {
+      "role": "Interactive Media Design",
       "org": "Universidad Icesi",
       "period": ""
     }
@@ -39,25 +44,25 @@
     "TypeScript",
     "React"
   ],
-  "email": "",
+  "email": "juanjoseholguin128@gmail.com",
   "links": [
     {
       "label": "Behance",
-      "url": "https://www.behance.net/juanjoseholguin"
+      "url": "https://www.behance.net/juanjoholgun1"
     },
     {
       "label": "LinkedIn",
-      "url": "http://www.linkedin.com/in/juan-josé-holguín-b67062292"
+      "url": "https://www.linkedin.com/in/juan-jos%C3%A9-holgu%C3%ADn-b67062292/"
     },
     {
       "label": "GitHub",
       "url": "https://github.com/juanjoseholguin"
-    },
-    {
-      "label": "Instagram",
-      "url": "http://instagram.com/juanjoseholguin_"
     }
   ],
   "hiddenProjects": [],
-  "extraProjects": []
+  "extraProjects": [],
+  "featuredCount": 12,
+  "featuredIds": [
+    "221578125"
+  ]
 }

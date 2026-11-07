@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
+import { makeCharacter } from './characters.js';
+import { makeSkillBalls } from './skill-balls.js';
 
 const COLORS = {
   paper: new THREE.Color('#e4e7fb'),
@@ -149,7 +152,7 @@ function keyLabel(text, fg) {
   canvas.width = canvas.height = 256;
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = fg;
-  ctx.font = `600 ${text.length > 8 ? 38 : 44}px "Instrument Sans Variable", sans-serif`;
+  ctx.font = `600 ${text.length > 8 ? 38 : 44}px Poppins, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, 128, 128);
@@ -160,7 +163,7 @@ function keyLabel(text, fg) {
 
 /* Escena completa */
 
-export function createScene(canvas, { projects, awards, links, reducedMotion, onOpenProject }) {
+export function createScene(canvas, { projects, awards, links, skills, reducedMotion, character, onOpenProject, onCoin, onRollDie, onGreet }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -220,7 +223,7 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
   };
   addFloater(makeDie(1.3), [-5.9, 3.2, -6], 1, [0.3, 0.4]);
   addFloater(makeCursor(), [5.7, 2.9, -7], 0.95, [0.1, 0.35], true);
-  addFloater(makePawn(), [-4.9, -4, -8], 1.25, [0, 0.45]);
+  addFloater(makePawn(), [-6.6, -3.6, -8], 1.1, [0, 0.45]);
   addFloater(makeSwitch(), [5, -3.5, -6], 0.95, [0.15, 0.25], true);
   addFloater(makeDie(1.8, '#ffc629', '#0c0e2b'), [-8.2, 2.8, -40], 1, [0.3, 0.2]);
   addFloater(makePawn('#ffffff'), [7.8, -3.9, -39], 1.8, [0, 0.3]);
@@ -319,9 +322,30 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     return group;
   });
 
-  const racer = makePawn('#ff4b33');
-  racer.scale.setScalar(0.85);
+  /* Personaje jugable y monedas de la pista */
+  const racer = new THREE.Group();
   scene.add(racer);
+  let hero = null;
+  function setCharacter(kind) {
+    if (hero) racer.remove(hero.root);
+    hero = makeCharacter(kind);
+    racer.add(hero.root);
+    applyStyle();
+    hero.jump();
+  }
+
+  const coinSpots = [];
+  for (let i = 0; i < count - 1; i++) {
+    for (let j = 1; j <= 3; j++) coinSpots.push({ at: i + j / 4, collected: false, pop: 0 });
+  }
+  const coins = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.3, 0.3, 0.08, 24),
+    new THREE.MeshStandardMaterial({ color: '#ffc629', metalness: 0.85, roughness: 0.3 }),
+    Math.max(coinSpots.length, 1),
+  );
+  coins.frustumCulled = false;
+  scene.add(coins);
+  let coinsCollected = 0;
 
   /* Trofeos */
   const trophyStartZ = CARD.firstZ - count * CARD.gap - 22;
@@ -335,6 +359,9 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
 
   /* Consola de contacto */
   const consoleZ = trophyStartZ - awards.length * 15 - 18;
+  const skillBalls = makeSkillBalls(skills);
+  skillBalls.group.position.z = consoleZ;
+  scene.add(skillBalls.group);
   const panel = new THREE.Group();
   panel.position.set(0, 0, consoleZ);
   panel.rotation.x = 0.82;
@@ -442,10 +469,18 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     const consoleDist = narrow ? 5.3 / (TAN_HALF_FOV * aspect) : 21;
     const shift = narrow ? 0 : consoleDist * TAN_HALF_FOV * aspect * 0.38;
     const liftY = narrow ? consoleDist * TAN_HALF_FOV * 0.42 : 0;
-    // Sobre mí: la consola de lado. Contacto: de frente.
+    // Sobre mí: las bolas de habilidades. Contacto: la consola de frente.
+    const penDist = narrow ? 20 : 18;
+    const penH = penDist * TAN_HALF_FOV;
+    const penW = penH * aspect;
+    skillBalls.setBounds(
+      narrow
+        ? { minX: -penW, maxX: penW, minY: -penH, maxY: 0, r: 0.56 }
+        : { minX: -penW * 0.04, maxX: penW, minY: -penH, maxY: penH, r: Math.min(penW * 0.14, 1.05) },
+    );
     poses.push({
-      pos: narrow ? [0, -liftY * 3.2, consoleZ + consoleDist] : [-shift + 4, 3, consoleZ + consoleDist],
-      look: narrow ? [0, -liftY * 3.4, consoleZ] : [-shift, 0, consoleZ],
+      pos: [0, 0, consoleZ + penDist],
+      look: [0, 0, consoleZ],
       bg: COLORS.ink,
       theme: 'dark',
       stars: 0,
@@ -471,6 +506,7 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    pixelTarget.setSize(Math.round(190 * camera.aspect), 190);
     renderer.shadowMap.enabled = !coarse;
     sun.castShadow = !coarse;
     floaters.forEach((f) => place(f, f.userData.base, camera.aspect));
@@ -478,7 +514,80 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     scene.fog.far = coarse ? 110 : 60;
     buildPoses(camera.aspect);
   }
+  /* Estilos visuales: 3D, pixel, toon y wireframe */
+  const pixelTarget = new THREE.WebGLRenderTarget(320, 190, {
+    minFilter: THREE.NearestFilter,
+    magFilter: THREE.NearestFilter,
+    type: THREE.HalfFloatType,
+  });
+  const quadScene = new THREE.Scene();
+  const quadCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  quadScene.add(
+    new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      new THREE.ShaderMaterial({
+        uniforms: { tScene: { value: pixelTarget.texture }, uSize: { value: new THREE.Vector2() } },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+        fragmentShader: `
+          uniform sampler2D tScene; uniform vec2 uSize; varying vec2 vUv;
+          float bayer(vec2 p) {
+            int x = int(mod(p.x, 4.0)); int y = int(mod(p.y, 4.0));
+            int m[16] = int[16](0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5);
+            return float(m[y * 4 + x]) / 16.0 - 0.5;
+          }
+          void main() {
+            gl_FragColor = texture2D(tScene, vUv);
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
+            vec3 c = gl_FragColor.rgb + bayer(floor(vUv * uSize)) * 0.05;
+            gl_FragColor = vec4(floor(c * 9.0 + 0.5) / 9.0, 1.0);
+          }`,
+        depthTest: false,
+        depthWrite: false,
+      }),
+    ),
+  );
+  const pixelUniforms = quadScene.children[0].material.uniforms;
+  const outline = new OutlineEffect(renderer, { defaultThickness: 0.006, defaultColor: [0.05, 0.055, 0.17] });
+  outline.autoClear = true;
+  planet.material.userData.outlineParameters = { visible: false };
+  const toonSteps = new THREE.DataTexture(new Uint8Array([90, 170, 255]), 3, 1, THREE.RedFormat);
+  toonSteps.minFilter = toonSteps.magFilter = THREE.NearestFilter;
+  toonSteps.needsUpdate = true;
+  let styleName = '3d';
+
+  function applyStyle() {
+    scene.traverse((object) => {
+      if (!object.isMesh) return;
+      const original = object.userData.pbr ?? object.material;
+      if (original.isMeshBasicMaterial) {
+        original.userData.outlineParameters = { visible: false };
+        return;
+      }
+      if (!original.isMeshStandardMaterial) return;
+      object.userData.pbr = original;
+      original.wireframe = styleName === 'wire';
+      if (styleName === 'toon') {
+        original.userData.toon ??= new THREE.MeshToonMaterial({
+          color: original.color,
+          gradientMap: toonSteps,
+          transparent: original.transparent,
+          opacity: original.opacity,
+        });
+        object.material = original.userData.toon;
+      } else {
+        object.material = original;
+      }
+    });
+  }
+  function setStyle(name) {
+    styleName = name;
+    applyStyle();
+    sun.intensity = name === 'toon' ? 2.8 : 2.1;
+  }
+
   resize();
+  setCharacter(character);
 
   /* Interacción */
   const pointer = new THREE.Vector2(0, 0);
@@ -490,11 +599,28 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
 
   function pick() {
     ray.setFromCamera(pointer, camera);
-    return ray.intersectObjects(clickable, false)[0]?.object ?? null;
+    const hit = ray.intersectObjects([...clickable, racer, floaters[0]], true).find((h) => h.object.visible && !h.object.isSprite);
+    if (!hit) return null;
+    let node = hit.object;
+    while (node) {
+      if (node === racer) return racer;
+      if (node === floaters[0]) return floaters[0];
+      node = node.parent;
+    }
+    return hit.object;
   }
+  const penPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  const penPoint = new THREE.Vector3();
+  function pointerOnPen() {
+    penPlane.constant = -consoleZ;
+    ray.setFromCamera(pointer, camera);
+    return ray.ray.intersectPlane(penPlane, penPoint);
+  }
+  let pointerSeen = false;
   const overUi = (target) => target?.closest?.('a, button, dialog, .bar');
   window.addEventListener('pointermove', (e) => {
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+    pointerSeen = true;
     hovered = e.pointerType === 'mouse' && !overUi(e.target) ? pick() : null;
     document.body.style.cursor = hovered ? 'pointer' : '';
   });
@@ -502,6 +628,16 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     if (overUi(e.target)) return;
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
     const hit = pick();
+    if (hit === racer) {
+      hero.jump();
+      onGreet();
+      return;
+    }
+    if (hit === floaters[0]) {
+      onRollDie();
+      return;
+    }
+    if (skillBalls.group.visible && pointerOnPen()) skillBalls.kick(penPoint);
     if (hit?.userData.project) onOpenProject(hit.userData.project);
     if (hit?.userData.link) window.open(hit.userData.link.url, '_blank', 'noopener');
   });
@@ -512,9 +648,12 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
   const pos = new THREE.Vector3();
   const look = new THREE.Vector3();
   const clock = new THREE.Clock();
+  let lastK = 0;
+  let speed = 0;
 
   function render(k) {
-    const time = reducedMotion ? 0 : clock.getElapsedTime();
+    const dt = clock.getDelta();
+    const time = reducedMotion ? 0 : clock.elapsedTime;
     const last = poses.length - 1;
     const t = THREE.MathUtils.clamp(k / last, 0, 1);
     curvePos.getPoint(t, pos);
@@ -538,7 +677,7 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     planet.visible = !inside;
     starField.material.opacity = (i === 0 ? THREE.MathUtils.smoothstep(f, 0.55, 0.9) : a.stars * (1 - f)) * 0.9;
     starField.visible = starField.material.opacity > 0.01;
-    tiles.visible = k > 0.5;
+    tiles.visible = k > 1.25;
 
     const theme = f < 0.5 ? a.theme : b.theme;
     if (theme !== currentTheme) {
@@ -562,9 +701,52 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     // La ficha salta de casilla en casilla hacia cada proyecto.
     const raceK = THREE.MathUtils.clamp(k - 2, 0, count - 1);
     const racePoint = track.getPoint((raceK + 1) / (count + 1));
-    const hops = raceK * 5;
-    racer.position.set(racePoint.x, -0.98 + Math.abs(Math.sin(hops * Math.PI)) * 0.85, racePoint.z + 1.2);
-    racer.visible = k > 1.2 && k < count + 2.2;
+    const moving = THREE.MathUtils.clamp(Math.abs(k - lastK) / Math.max(dt, 0.001) * 0.9, 0, 1);
+    lastK = k;
+    speed += (moving - speed) * Math.min(dt * 7, 1);
+    const trophyIndex = Math.round(k - 2 - count);
+    const onTrack = k > 1.3 && k < count + 1.6;
+    const onTrophy = trophyIndex >= 0 && trophyIndex < trophies.length && Math.abs(k - 2 - count - trophyIndex) < 0.3;
+    const inHero = k < 0.55;
+    const atEnd = k > count + awards.length + 2.7;
+    racer.visible = onTrack || onTrophy || inHero || atEnd;
+    racer.scale.setScalar(1);
+    let cheer = false;
+    let turn = 0;
+    if (inHero) {
+      racer.position.set(0, camera.aspect < 1 ? -3.45 : -4.05, -6);
+      racer.scale.setScalar(0.95);
+    } else if (onTrophy) {
+      const spot = trophies[trophyIndex].position;
+      racer.position.set(spot.x + (camera.aspect < 1 ? -1.9 : -2.5), -1.1, spot.z + 1.6);
+      cheer = !reducedMotion;
+    } else if (atEnd) {
+      racer.position.set(camera.aspect < 1 ? 3 : -0.5, -3.9, consoleZ + 3);
+    } else {
+      racer.position.set(racePoint.x, -0.98, racePoint.z - 1.6);
+      turn = Math.PI * speed;
+    }
+    racer.rotation.y = turn;
+    if (hero) {
+      const toCamera = new THREE.Vector3(pointer.x, pointer.y, 0);
+      hero.update({ dt, walk: raceK * 22, speed: onTrack ? speed : 0, look: toCamera, cheer, time });
+    }
+
+    coinSpots.forEach((coin, index) => {
+      if (!coin.collected && raceK >= coin.at) {
+        coin.collected = true;
+        coinsCollected += 1;
+        onCoin(coinsCollected);
+      }
+      if (coin.collected) coin.pop = Math.min(coin.pop + dt * 3, 1);
+      const p = track.getPoint((coin.at + 1) / (count + 1));
+      dummy.position.set(p.x, -0.42 + coin.pop * 1.4 + Math.sin(time * 2.4 + index) * 0.06, p.z - 1.6);
+      dummy.rotation.set(Math.PI / 2, 0, time * 2.4 + index + coin.pop * 8);
+      dummy.scale.setScalar(k > 1.3 && k < count + 2.2 ? 1 - coin.pop : 0.0001);
+      dummy.updateMatrix();
+      coins.setMatrixAt(index, dummy.matrix);
+    });
+    coins.instanceMatrix.needsUpdate = true;
 
     cards.forEach((card, index) => {
       // La tarjeta se levanta de la pista al llegar y se acuesta al pasar.
@@ -583,7 +765,9 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     });
 
     const consoleStart = 2 + count + awards.length;
-    panel.visible = k > consoleStart - 0.75;
+    panel.visible = k > consoleStart + 0.22;
+    const ballsActive = Math.abs(k - consoleStart) < 0.72;
+    skillBalls.update(reducedMotion ? 1 / 60 : dt, ballsActive, ballsActive && pointerSeen ? pointerOnPen() : null);
     keys.forEach((key) => {
       const down = key.children.includes(hovered) ? 0.2 : 0;
       key.position.y += (key.userData.rest - down - key.position.y) * 0.25;
@@ -593,8 +777,18 @@ export function createScene(canvas, { projects, awards, links, reducedMotion, on
     sun.position.set(pos.x + 7, 16, look.z + 12);
     sun.target.position.set(look.x, 0, look.z);
 
-    renderer.render(scene, camera);
+    if (styleName === 'pixel') {
+      pixelUniforms.uSize.value.set(pixelTarget.width, pixelTarget.height);
+      renderer.setRenderTarget(pixelTarget);
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      renderer.render(quadScene, quadCamera);
+    } else if (styleName === 'toon') {
+      outline.render(scene, camera);
+    } else {
+      renderer.render(scene, camera);
+    }
   }
 
-  return { render, get poseCount() { return poses.length; } };
+  return { render, setStyle, setCharacter, jump: () => hero.jump() };
 }

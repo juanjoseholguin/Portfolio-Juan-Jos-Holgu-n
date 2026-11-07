@@ -1,24 +1,27 @@
-import '@fontsource-variable/bodoni-moda/wght-italic.css';
-import '@fontsource-variable/instrument-sans/wght.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource-variable/pixelify-sans/wght.css';
 import './style.css';
 import { createScene } from './scene.js';
+import { createHud } from './hud.js';
 
 const esc = (value = '') =>
   String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const dataUrl = (file) => `${import.meta.env.BASE_URL}data/${file}`;
-const number = new Intl.NumberFormat('es-CO');
+const number = new Intl.NumberFormat('en-US');
 const yearOf = (seconds) => (seconds ? new Date(seconds * 1000).getFullYear() : '');
 const firstParagraph = (text = '') => text.split(/\n\s*\n/)[0].trim();
 
 function projectMeta(p) {
   const parts = [yearOf(p.publishedOn)];
-  if (p.views) parts.push(`${number.format(p.views)} vistas`);
+  if (p.views) parts.push(`${number.format(p.views)} views`);
   return parts.filter(Boolean).join(', ');
 }
 
-function render(profile, projects) {
-  const stops = projects
+function render(profile, projects, featured) {
+  const stops = featured
     .map(
       (p, i) => `
       <section class="chapter stop ${i % 2 === 0 ? 'right' : ''}" data-pose id="${i === 0 ? 'proyectos' : `proyecto-${i}`}">
@@ -27,7 +30,7 @@ function render(profile, projects) {
           <h3>${esc(p.name)}</h3>
           <p class="meta">${esc(projectMeta(p))}</p>
           ${p.description ? `<p class="summary">${esc(firstParagraph(p.description))}</p>` : ''}
-          <button class="btn" type="button" data-project="${i}">Ver proyecto</button>
+          <button class="btn" type="button" data-project="${projects.indexOf(p)}">View project</button>
         </div></div>
       </section>`,
     )
@@ -41,7 +44,7 @@ function render(profile, projects) {
           <p class="prize">${esc(a.prize)}${a.year ? `, ${esc(a.year)}` : ''}</p>
           <h3>${esc(a.title)}</h3>
           ${a.detail ? `<p class="meta">${esc(a.detail)}</p>` : ''}
-          ${a.url ? `<a class="btn" href="${esc(a.url)}" target="_blank" rel="noopener">Ver proyecto premiado</a>` : ''}
+          ${a.url ? `<a class="btn" href="${esc(a.url)}" target="_blank" rel="noopener">View winning project</a>` : ''}
         </div></div>
       </section>`,
     )
@@ -53,7 +56,7 @@ function render(profile, projects) {
     )
     .join('');
   const slot = import.meta.env.DEV
-    ? '<li class="slot"><a href="/editor.html">Añade aquí tu experiencia, cargos y logros</a></li>'
+    ? '<li class="slot"><a href="/editor.html">Add your experience here</a></li>'
     : '';
 
   const links = profile.links.filter((l) => l.url);
@@ -62,9 +65,9 @@ function render(profile, projects) {
     <section class="chapter hero" id="top" data-pose>
       <div class="pin"><div>
         <h1>${esc(profile.name)}</h1>
-        <p>${esc(profile.role)} en ${esc(profile.location)}</p>
+        <p>${esc(profile.role)} in ${esc(profile.location)}</p>
       </div>
-      <p class="hint">Desliza para entrar</p></div>
+      <p class="hint">Scroll to enter</p></div>
     </section>
     <section class="chapter statement" data-pose>
       <div class="pin"><p class="fade">${esc(profile.statement)}</p></div>
@@ -73,7 +76,7 @@ function render(profile, projects) {
     ${awards}
     <section class="chapter about" id="sobre-mi" data-pose>
       <div class="pin"><div class="copy fade">
-        <h2 class="section-title">Sobre mí</h2>
+        <h2 class="section-title">About me</h2>
         <p class="about-text">${esc(profile.about)}</p>
         <p class="skills">${profile.skills.map(esc).join(', ')}</p>
         <ul class="experience">${experience}${slot}</ul>
@@ -81,8 +84,8 @@ function render(profile, projects) {
     </section>
     <section class="index" aria-labelledby="index-title">
       <div class="index-head">
-        <h2 class="section-title" id="index-title">Todos los proyectos</h2>
-        <a href="https://www.behance.net/${esc(profile.behanceUsername)}" target="_blank" rel="noopener">Ver perfil en Behance</a>
+        <h2 class="section-title" id="index-title">All projects</h2>
+        <a href="https://www.behance.net/${esc(profile.behanceUsername)}" target="_blank" rel="noopener">View Behance profile</a>
       </div>
       <div class="grid">
         ${projects
@@ -97,7 +100,7 @@ function render(profile, projects) {
     </section>
     <section class="chapter contact" id="contacto" data-pose>
       <div class="pin"><div class="copy fade">
-        <h2 class="section-title">Hablemos</h2>
+        <h2 class="section-title">Let's talk</h2>
         <ul class="contact-links">
           ${profile.email ? `<li><a href="mailto:${esc(profile.email)}">${esc(profile.email)}</a></li>` : ''}
           ${links.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join('')}
@@ -110,14 +113,14 @@ function render(profile, projects) {
 function openProject(project) {
   const dialog = document.getElementById('project-dialog');
   dialog.innerHTML = `
-    ${project.cover ? `<img src="${esc(project.cover)}" alt="Portada de ${esc(project.name)}" />` : ''}
+    ${project.cover ? `<img src="${esc(project.cover)}" alt="Cover of ${esc(project.name)}" />` : ''}
     <div class="dialog-body">
       <h2 id="dialog-title">${esc(project.name)}</h2>
       <p class="meta">${esc(projectMeta(project))}</p>
       ${project.description ? `<p class="description">${esc(project.description)}</p>` : ''}
       <div class="dialog-actions">
-        <a class="btn" href="${esc(project.url)}" target="_blank" rel="noopener">Abrir en Behance</a>
-        <button class="close" type="button">Cerrar</button>
+        <a class="btn" href="${esc(project.url)}" target="_blank" rel="noopener">Open on Behance</a>
+        <button class="close" type="button">Close</button>
       </div>
     </div>`;
   dialog.querySelector('.close').addEventListener('click', () => dialog.close());
@@ -178,7 +181,14 @@ async function start() {
   const projects = [...(profile.extraProjects ?? []), ...synced.projects].filter((p) => !hidden.has(String(p.id)));
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  render(profile, projects);
+  // Vuelo: los más recientes y los proyectos premiados.
+  const forced = projects.filter((p) => (profile.featuredIds ?? []).includes(String(p.id)));
+  const featured = [
+    ...projects.filter((p) => !forced.includes(p)).slice(0, Math.max((profile.featuredCount ?? 12) - forced.length, 0)),
+    ...forced,
+  ];
+
+  render(profile, projects, featured);
   document.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-project]');
     if (trigger) openProject(projects[Number(trigger.dataset.project)]);
@@ -187,14 +197,47 @@ async function start() {
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 
   const mapper = scrollMapper();
+  await document.fonts?.load('700 40px Poppins');
+  const stopEls = [...document.querySelectorAll('.stop')];
+  let currentK = 0;
+  function rollDie() {
+    const roll = 1 + Math.floor(Math.random() * 6);
+    const here = Math.round(currentK) - 2;
+    const from = here < 0 || here >= stopEls.length ? -1 : here;
+    const target = from + roll >= stopEls.length ? (from + roll) % stopEls.length : from + roll;
+    const el = stopEls[target];
+    const top = el.getBoundingClientRect().top + window.scrollY + Math.max(el.offsetHeight - window.innerHeight, 0) / 2;
+    window.scrollTo({ top, behavior: reducedMotion ? 'auto' : 'smooth' });
+    scene?.jump();
+    hud.speak(`You rolled ${roll}. Next stop: ${featured[target].name}`);
+  }
+  const coinsTotal = Math.max(featured.length - 1, 0) * 3;
+  const hud = createHud({
+    coinsTotal,
+    reducedMotion,
+    onStyle: (name) => scene?.setStyle(name),
+    onCharacter: (name) => scene?.setCharacter(name),
+    onRoll: rollDie,
+  });
   let scene;
   try {
     scene = createScene(document.getElementById('scene'), {
-      projects,
+      projects: featured,
       awards: profile.awards,
-      links: profile.links.filter((l) => l.url),
+      links: [
+        ...profile.links.filter((l) => l.url).slice(0, 3),
+        ...(profile.email ? [{ label: 'Email', url: `mailto:${profile.email}` }] : []),
+      ],
+      skills: profile.skills.slice(0, 9),
       reducedMotion,
+      character: hud.character,
       onOpenProject: openProject,
+      onRollDie: rollDie,
+      onGreet: () => hud.speak(`Hi! Roll the die to race to a project.`),
+      onCoin: (n) => {
+        hud.setCoins(n);
+        if (n === coinsTotal) hud.speak('All coins collected. Nice run!');
+      },
     });
   } catch (error) {
     console.warn('WebGL no disponible', error);
@@ -203,6 +246,7 @@ async function start() {
     return;
   }
 
+  scene.setStyle(hud.style);
   let smooth = window.scrollY;
   let previous = performance.now();
   const frame = (now) => {
@@ -212,12 +256,13 @@ async function start() {
     smooth += (y - smooth) * (reducedMotion ? 1 : 1 - Math.exp(-dt * 7));
     if (Math.abs(y - smooth) < 0.05) smooth = y;
     mapper.fadeCopy(smooth, reducedMotion);
-    scene.render(mapper.toPose(smooth));
+    currentK = mapper.toPose(smooth);
+    scene.render(currentK);
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
 }
 
 start().catch((error) => {
-  document.getElementById('app').innerHTML = `<p style="padding:96px 24px">No se pudo cargar el contenido: ${esc(error.message)}. Ejecuta npm run sync y recarga.</p>`;
+  document.getElementById('app').innerHTML = `<p style="padding:96px 24px">The content could not load: ${esc(error.message)}. Reload the page to try again.</p>`;
 });
