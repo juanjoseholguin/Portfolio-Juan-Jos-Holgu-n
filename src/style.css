@@ -432,5 +432,5 @@ body[data-style='wire'] .stop .copy { background: rgb(8 6 15 / 0.9); border: 1px
   .pad-row { grid-template-columns: 44px repeat(8, 1fr); font-size: 0.75rem; }
 }
 
-.contact-links a { overflow-wrap: anywhere; }
+.contact-links a { overflow-wrap: anywhere; font-size: clamp(1.25rem, 2.1vw, 2rem); }
 @media (max-width: 760px) { .contact-links a { font-size: 1.25rem; } }

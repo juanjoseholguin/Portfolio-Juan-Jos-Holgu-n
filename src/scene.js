@@ -392,7 +392,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   const keyStyles = [
     { c: '#c6ff3d', t: '#120a2c' },
     { c: '#ff2bd6', t: '#120a2c' },
-    { c: '#ffffff', t: '#0c0e2b' },
+    { c: '#cfcbea', t: '#120a2c' },
     { c: '#7a2bff', t: '#ffffff' },
   ];
   const keys = links.slice(0, 4).map((link, i) => {
