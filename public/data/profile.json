@@ -1,0 +1,63 @@
+{
+  "behanceUsername": "juanjoseholguin",
+  "name": "Juan José Holguín",
+  "role": "Diseñador UI/UX",
+  "location": "Cali, Colombia",
+  "statement": "Mezclo arte y lógica para crear historias que puedes tocar, deslizar y sentir.",
+  "about": "Diseño experiencias digitales claras y con personalidad. Animo en After Effects, ilustro en Illustrator y Photoshop, y prototipo apps en Figma. También programo en JavaScript, TypeScript y React, y estoy aprendiendo Python.",
+  "awards": [
+    {
+      "prize": "Premio Equinoccio",
+      "title": "Mejor diseño audiovisual",
+      "detail": "",
+      "year": "",
+      "url": "",
+      "icon": "film"
+    },
+    {
+      "prize": "Premio Equinoccio",
+      "title": "Mejor diseño en juego de mesa",
+      "detail": "Por Carrera a la Locura, un juego de carreras con personajes hechos de objetos cotidianos.",
+      "year": "",
+      "url": "https://www.behance.net/gallery/256507675/Carrera-a-la-locura-Board-Game",
+      "icon": "die"
+    }
+  ],
+  "experience": [
+    {
+      "role": "Diseño de medios interactivos",
+      "org": "Universidad Icesi",
+      "period": ""
+    }
+  ],
+  "skills": [
+    "Figma",
+    "After Effects",
+    "Illustrator",
+    "Photoshop",
+    "JavaScript",
+    "TypeScript",
+    "React"
+  ],
+  "email": "",
+  "links": [
+    {
+      "label": "Behance",
+      "url": "https://www.behance.net/juanjoseholguin"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "http://www.linkedin.com/in/juan-josé-holguín-b67062292"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/juanjoseholguin"
+    },
+    {
+      "label": "Instagram",
+      "url": "http://instagram.com/juanjoseholguin_"
+    }
+  ],
+  "hiddenProjects": [],
+  "extraProjects": []
+}
