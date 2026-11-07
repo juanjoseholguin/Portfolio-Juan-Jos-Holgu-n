@@ -64,5 +64,22 @@
   "featuredCount": 12,
   "featuredIds": [
     "221578125"
+  ],
+  "passions": [
+    {
+      "tag": "Music",
+      "title": "Music sets the tempo.",
+      "text": "I design with a soundtrack on. Rhythm ends up in my layouts and my motion."
+    },
+    {
+      "tag": "Sport",
+      "title": "Sport sets the rules.",
+      "text": "Good games make you want to play again. I try to build interfaces the same way."
+    },
+    {
+      "tag": "Design",
+      "title": "Design ties it together.",
+      "text": "Pen tool, color, and type: where everything I love becomes something you can use."
+    }
   ]
 }

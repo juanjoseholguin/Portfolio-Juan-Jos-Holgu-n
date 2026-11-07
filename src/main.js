@@ -1,10 +1,12 @@
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
+import '@fontsource/caveat/700.css';
 import '@fontsource-variable/pixelify-sans/wght.css';
 import './style.css';
 import { createScene } from './scene.js';
 import { createHud } from './hud.js';
+import { initChapters, pencilChapter, playChapter, tvChapter, zoomChapter } from './chapters.js';
 
 const esc = (value = '') =>
   String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -50,6 +52,19 @@ function render(profile, projects, featured) {
     )
     .join('');
 
+  const passions = (profile.passions ?? [])
+    .map(
+      (item) => `
+      <section class="chapter object" data-pose>
+        <div class="pin"><div class="copy fade">
+          <p class="object-tag">${esc(item.tag)}</p>
+          <h3>${esc(item.title)}</h3>
+          <p class="meta">${esc(item.text)}</p>
+        </div></div>
+      </section>`,
+    )
+    .join('');
+
   const experience = profile.experience
     .map(
       (e) => `<li><strong>${esc(e.role)}</strong><span>${[e.org, e.period].filter(Boolean).map(esc).join(', ')}</span></li>`,
@@ -72,7 +87,12 @@ function render(profile, projects, featured) {
     <section class="chapter statement" data-pose>
       <div class="pin"><p class="fade">${esc(profile.statement)}</p></div>
     </section>
+    ${pencilChapter()}
     ${stops}
+    ${zoomChapter(projects.find((p) => p.id === '256507675') ?? projects[0])}
+    ${passions}
+    ${playChapter()}
+    ${tvChapter()}
     ${awards}
     <section class="chapter about" id="sobre-mi" data-pose>
       <div class="pin"><div class="copy fade">
@@ -196,6 +216,7 @@ async function start() {
   const dialog = document.getElementById('project-dialog');
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 
+  initChapters();
   const mapper = scrollMapper();
   await document.fonts?.load('700 40px Poppins');
   const stopEls = [...document.querySelectorAll('.stop')];
@@ -249,6 +270,7 @@ async function start() {
   scene.setStyle(hud.style);
   let smooth = window.scrollY;
   let previous = performance.now();
+  const solids = [...document.querySelectorAll('.solid, .index')];
   const frame = (now) => {
     const y = window.scrollY;
     const dt = Math.min((now - previous) / 1000, 0.25);
@@ -257,7 +279,12 @@ async function start() {
     if (Math.abs(y - smooth) < 0.05) smooth = y;
     mapper.fadeCopy(smooth, reducedMotion);
     currentK = mapper.toPose(smooth);
-    scene.render(currentK);
+    // Un capítulo 2D tapa toda la pantalla: no hace falta dibujar el 3D debajo.
+    const covered = solids.some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top <= 0 && r.bottom >= window.innerHeight;
+    });
+    if (!covered) scene.render(currentK);
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);

@@ -4,11 +4,19 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
 import { makeCharacter } from './characters.js';
 import { makeSkillBalls } from './skill-balls.js';
+import { makeClusters } from './objects.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 const COLORS = {
-  paper: new THREE.Color('#e4e7fb'),
-  ultra: new THREE.Color('#2430e0'),
-  ink: new THREE.Color('#0c0e2b'),
+  paper: new THREE.Color('#08060f'),
+  ultra: new THREE.Color('#3a10d8'),
+  ink: new THREE.Color('#05040a'),
+  music: new THREE.Color('#16042c'),
+  sport: new THREE.Color('#2a0a12'),
+  design: new THREE.Color('#031a24'),
 };
 const PLANET = { z: -20, radius: 9.5 };
 const CARD = { w: 5.2, h: 4.06, gap: 15, firstZ: -66, baseY: -0.6 };
@@ -172,20 +180,23 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   scene.fog = new THREE.Fog(COLORS.paper.clone(), 22, 60);
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.75;
+  scene.environmentIntensity = 0.42;
 
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 220);
   const sun = new THREE.DirectionalLight('#ffffff', 2.1);
   sun.shadow.mapSize.set(1024, 1024);
   Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 60 });
   sun.shadow.bias = -0.0006;
-  scene.add(sun, sun.target);
+  sun.intensity = 0.9;
+  const neonA = new THREE.PointLight('#b14dff', 70, 60, 1.7);
+  const neonB = new THREE.PointLight('#27e6ff', 50, 60, 1.7);
+  scene.add(sun, sun.target, neonA, neonB);
 
   /* Planeta */
   const planet = new THREE.Mesh(
     new THREE.SphereGeometry(PLANET.radius, 96, 64),
     new THREE.ShaderMaterial({
-      uniforms: { uBase: { value: COLORS.ultra.clone() }, uRim: { value: new THREE.Color('#aab4ff') } },
+      uniforms: { uBase: { value: COLORS.ultra.clone() }, uRim: { value: new THREE.Color('#f08bff') } },
       vertexShader: `
         varying vec3 vN; varying vec3 vV;
         void main() {
@@ -258,7 +269,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     new THREE.MeshPhysicalMaterial({ roughness: 0.35, clearcoat: 0.6 }),
     tileCount,
   );
-  const tileColors = ['#2430e0', '#ffffff', '#ffc629', '#ffffff', '#ff4b33', '#ffffff'].map((c) => new THREE.Color(c));
+  const tileColors = ['#8a3bff', '#191433', '#27e6ff', '#191433', '#ff2bd6', '#191433'].map((c) => new THREE.Color(c));
   const dummy = new THREE.Object3D();
   for (let i = 0; i < tileCount; i++) {
     const t = i / (tileCount - 1);
@@ -275,7 +286,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
 
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(90, Math.abs(count * CARD.gap) + 90),
-    new THREE.ShadowMaterial({ opacity: 0.2, color: '#1b2190' }),
+    new THREE.ShadowMaterial({ opacity: 0.55, color: '#000000' }),
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.set(0, -1.22, CARD.firstZ - (count * CARD.gap) / 2);
@@ -348,7 +359,14 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   let coinsCollected = 0;
 
   /* Trofeos */
-  const trophyStartZ = CARD.firstZ - count * CARD.gap - 22;
+  const clusters = makeClusters();
+  const clusterStartZ = CARD.firstZ - count * CARD.gap - 24;
+  clusters.forEach((cluster, i) => {
+    cluster.group.position.set(0, 1, clusterStartZ - i * 24);
+    scene.add(cluster.group);
+  });
+  const O = clusters.length;
+  const trophyStartZ = clusterStartZ - O * 24;
   const trophies = awards.map((award, i) => {
     const t = makeTrophy(award.icon);
     t.position.set(0, -1.1, trophyStartZ - i * 15);
@@ -372,10 +390,10 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   board.receiveShadow = true;
   panel.add(board);
   const keyStyles = [
-    { c: '#ffc629', t: '#0c0e2b' },
-    { c: '#ff4b33', t: '#0c0e2b' },
+    { c: '#c6ff3d', t: '#120a2c' },
+    { c: '#ff2bd6', t: '#120a2c' },
     { c: '#ffffff', t: '#0c0e2b' },
-    { c: '#2430e0', t: '#ffffff' },
+    { c: '#7a2bff', t: '#ffffff' },
   ];
   const keys = links.slice(0, 4).map((link, i) => {
     const style = keyStyles[i];
@@ -431,7 +449,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   function buildPoses(aspect) {
     const narrow = aspect < 1;
     poses = [
-      { pos: [0, 0, 10], look: [0, 0, PLANET.z], bg: COLORS.paper, theme: 'light', stars: 0 },
+      { pos: [0, 0, 10], look: [0, 0, PLANET.z], bg: COLORS.paper, theme: 'dark', stars: 0 },
       { pos: [0, 0, -24], look: [0, 0, -44], bg: COLORS.ultra, theme: 'dark', stars: 1 },
     ];
     cards.forEach((card) => {
@@ -449,7 +467,21 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
       }
       const pos = look.clone().addScaledVector(normal, dist);
       pos.y += 1.3;
-      poses.push({ pos: pos.toArray(), look: look.toArray(), bg: COLORS.paper, theme: 'light', stars: 0 });
+      poses.push({ pos: pos.toArray(), look: look.toArray(), bg: COLORS.paper, theme: 'dark', stars: 0 });
+    });
+    clusters.forEach((cluster, i) => {
+      const c = cluster.group.position.clone();
+      const dist = narrow ? 3.4 / (TAN_HALF_FOV * aspect) : 11.5;
+      const look = c.clone();
+      if (narrow) look.y -= dist * TAN_HALF_FOV * 0.3;
+      else look.x -= dist * TAN_HALF_FOV * aspect * 0.42;
+      poses.push({
+        pos: [look.x, look.y, c.z + dist],
+        look: look.toArray(),
+        bg: [COLORS.music, COLORS.sport, COLORS.design][i],
+        theme: 'dark',
+        stars: 0,
+      });
     });
     trophies.forEach((trophy) => {
       const c = trophy.position.clone();
@@ -507,6 +539,9 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     pixelTarget.setSize(Math.round(190 * camera.aspect), 190);
+    composer.setPixelRatio(renderer.getPixelRatio());
+    composer.setSize(w, h);
+    useBloom = !coarse;
     renderer.shadowMap.enabled = !coarse;
     sun.castShadow = !coarse;
     floaters.forEach((f) => place(f, f.userData.base, camera.aspect));
@@ -548,6 +583,11 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     ),
   );
   const pixelUniforms = quadScene.children[0].material.uniforms;
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
+  composer.addPass(new RenderPass(scene, camera));
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(512, 512), 0.16, 0.4, 1.05));
+  composer.addPass(new OutputPass());
+  let useBloom = true;
   const outline = new OutlineEffect(renderer, { defaultThickness: 0.006, defaultColor: [0.05, 0.055, 0.17] });
   outline.autoClear = true;
   planet.material.userData.outlineParameters = { visible: false };
@@ -583,7 +623,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   function setStyle(name) {
     styleName = name;
     applyStyle();
-    sun.intensity = name === 'toon' ? 2.8 : 2.1;
+    sun.intensity = name === 'toon' ? 2.6 : 1.1;
   }
 
   resize();
@@ -704,11 +744,11 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     const moving = THREE.MathUtils.clamp(Math.abs(k - lastK) / Math.max(dt, 0.001) * 0.9, 0, 1);
     lastK = k;
     speed += (moving - speed) * Math.min(dt * 7, 1);
-    const trophyIndex = Math.round(k - 2 - count);
+    const trophyIndex = Math.round(k - 2 - count - O);
     const onTrack = k > 1.3 && k < count + 1.6;
-    const onTrophy = trophyIndex >= 0 && trophyIndex < trophies.length && Math.abs(k - 2 - count - trophyIndex) < 0.3;
+    const onTrophy = trophyIndex >= 0 && trophyIndex < trophies.length && Math.abs(k - 2 - count - O - trophyIndex) < 0.3;
     const inHero = k < 0.55;
-    const atEnd = k > count + awards.length + 2.7;
+    const atEnd = k > count + O + awards.length + 2.7;
     racer.visible = onTrack || onTrophy || inHero || atEnd;
     racer.scale.setScalar(1);
     let cheer = false;
@@ -758,13 +798,14 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     });
 
     trophies.forEach((trophy, index) => {
-      const near = k - (2 + count + index);
+      const near = k - (2 + count + O + index);
       trophy.visible = Math.abs(near) < 0.95;
       trophy.rotation.y = near * 1.6 + time * 0.25;
       trophy.userData.top.rotation.y = -trophy.rotation.y + (trophy.userData.topFaces ? Math.sin(time * 0.8) * 0.4 : time * 0.9 + k * 2);
     });
 
-    const consoleStart = 2 + count + awards.length;
+    clusters.forEach((cluster, i) => cluster.update(k - (2 + count + i), time, pointerSmooth));
+    const consoleStart = 2 + count + O + awards.length;
     panel.visible = k > consoleStart + 0.22;
     const ballsActive = Math.abs(k - consoleStart) < 0.72;
     skillBalls.update(reducedMotion ? 1 / 60 : dt, ballsActive, ballsActive && pointerSeen ? pointerOnPen() : null);
@@ -774,6 +815,11 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     });
     faderKnob.position.z = 2 - THREE.MathUtils.clamp(k - consoleStart + 0.6, 0, 1.6) * 2.5;
 
+    const atConsole = k > consoleStart + 0.2;
+    neonA.intensity = atConsole ? 14 : 70;
+    neonB.intensity = atConsole ? 10 : 50;
+    neonA.position.set(look.x - 7, look.y + 5, look.z + 7);
+    neonB.position.set(look.x + 8, look.y - 3, look.z + 5);
     sun.position.set(pos.x + 7, 16, look.z + 12);
     sun.target.position.set(look.x, 0, look.z);
 
@@ -785,6 +831,8 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
       renderer.render(quadScene, quadCamera);
     } else if (styleName === 'toon') {
       outline.render(scene, camera);
+    } else if (styleName === '3d' && useBloom) {
+      composer.render();
     } else {
       renderer.render(scene, camera);
     }

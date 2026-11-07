@@ -29,6 +29,12 @@ const LISTS = {
     blank: { role: '', org: '', period: '' },
     fields: { role: 'Cargo o título', org: 'Empresa o institución', period: 'Periodo' },
   },
+  passions: {
+    title: 'Música, deporte y diseño (los tres objetos 3D)',
+    add: 'Añadir',
+    blank: { tag: '', title: '', text: '' },
+    fields: { tag: 'Etiqueta', title: 'Título', text: 'Texto' },
+  },
   links: {
     title: 'Enlaces (los cuatro primeros son las teclas de la consola)',
     add: 'Añadir enlace',
