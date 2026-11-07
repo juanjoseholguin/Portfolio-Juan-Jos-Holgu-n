@@ -4,9 +4,11 @@ import '@fontsource/poppins/700.css';
 import '@fontsource/caveat/700.css';
 import '@fontsource-variable/pixelify-sans/wght.css';
 import './style.css';
-import { createScene } from './scene.js';
 import { createHud } from './hud.js';
 import { initChapters, pencilChapter, playChapter, tvChapter, zoomChapter } from './chapters.js';
+import { doorChapter, initWorlds, lightChapter, pixelChapter } from './worlds.js';
+import { audioLevel, setAmbient, sfx } from './audio.js';
+import { LOW } from './quality.js';
 
 const esc = (value = '') =>
   String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -79,7 +81,12 @@ function render(profile, projects, featured) {
   document.getElementById('app').innerHTML = `
     <section class="chapter hero" id="top" data-pose>
       <div class="pin"><div>
-        <h1>${esc(profile.name)}</h1>
+        <h1 aria-label="${esc(profile.name)}">${profile.name
+          .split(' ')
+          .map((word, w) => `<span class="word" aria-hidden="true">${[...word]
+            .map((ch, i) => `<span class="letter" style="--i:${w * 5 + i}">${esc(ch)}</span>`)
+            .join('')}</span>`)
+          .join(' ')}</h1>
         <p>${esc(profile.role)} in ${esc(profile.location)}</p>
       </div>
       <p class="hint">Scroll to enter</p></div>
@@ -92,16 +99,23 @@ function render(profile, projects, featured) {
     ${zoomChapter(projects.find((p) => p.id === '256507675') ?? projects[0])}
     ${passions}
     ${playChapter()}
+    ${pixelChapter()}
     ${tvChapter()}
+    ${lightChapter(projects, profile.awards)}
+    ${doorChapter()}
     ${awards}
     <section class="chapter about" id="sobre-mi" data-pose>
       <div class="pin"><div class="copy fade">
-        <h2 class="section-title">About me</h2>
+        <div class="about-head">
+          <figure class="portrait"><img src="${import.meta.env.BASE_URL}juan.webp" alt="Portrait of Juan José Holguín" width="560" height="700" loading="lazy" /></figure>
+          <h2 class="section-title">About me</h2>
+        </div>
         <p class="about-text">${esc(profile.about)}</p>
         <p class="skills">${profile.skills.map(esc).join(', ')}</p>
         <ul class="experience">${experience}${slot}</ul>
       </div></div>
     </section>
+    <div class="marquee" aria-hidden="true"><div class="marquee-track">${'UI/UX Design  /  Motion  /  Branding  /  3D  /  Stop Motion  /  Code  /  '.repeat(6)}</div></div>
     <section class="index" aria-labelledby="index-title">
       <div class="index-head">
         <h2 class="section-title" id="index-title">All projects</h2>
@@ -186,6 +200,7 @@ function scrollMapper() {
         const opacity = Math.min(Math.max((1.12 - Math.abs(d)) / 0.42, 0), 1);
         copy.style.opacity = opacity;
         copy.style.visibility = opacity < 0.01 ? 'hidden' : 'visible';
+        copy.classList.toggle('in', opacity > 0.9);
         if (!reducedMotion) copy.style.transform = `translateY(${d * -22}px)`;
       });
     },
@@ -198,7 +213,9 @@ async function start() {
     fetch(dataUrl('projects.json')).then((r) => r.json()),
   ]);
   const hidden = new Set(profile.hiddenProjects.map(String));
-  const projects = [...(profile.extraProjects ?? []), ...synced.projects].filter((p) => !hidden.has(String(p.id)));
+  const projects = [...(profile.extraProjects ?? []), ...synced.projects]
+    .filter((p) => !hidden.has(String(p.id)))
+    .map((p) => ({ ...p, ...profile.projectCopy?.[p.id] }));
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Vuelo: los más recientes y los proyectos premiados.
@@ -233,15 +250,36 @@ async function start() {
     hud.speak(`You rolled ${roll}. Next stop: ${featured[target].name}`);
   }
   const coinsTotal = Math.max(featured.length - 1, 0) * 3;
+  let soundOn = true;
+  try { soundOn = localStorage.getItem('sound') !== 'off'; } catch { /* Sin almacenamiento. */ }
+  const startSound = () => {
+    window.removeEventListener('pointerdown', startSound);
+    window.removeEventListener('keydown', startSound);
+    if (soundOn) setAmbient(true);
+  };
+  window.addEventListener('pointerdown', startSound);
+  window.addEventListener('keydown', startSound);
   const hud = createHud({
     coinsTotal,
     reducedMotion,
+    soundOn,
+    onSound: (on) => {
+      soundOn = on;
+      try { localStorage.setItem('sound', on ? 'on' : 'off'); } catch { /* Sin almacenamiento. */ }
+      setAmbient(on);
+    },
     onStyle: (name) => scene?.setStyle(name),
-    onCharacter: (name) => scene?.setCharacter(name),
+    onCharacter: (name, look) => scene?.setCharacter(name, look),
     onRoll: rollDie,
   });
+  initWorlds({
+    getLook: () => hud.look,
+    covers: ['239441539', '213687773', '230018955', '193297007'].map((id) => projects.find((p) => p.id === id)?.cover).filter(Boolean),
+  });
+  // El sitio ya se puede leer y usar mientras llega el 3D.
   let scene;
   try {
+    const { createScene } = await import('./scene.js');
     scene = createScene(document.getElementById('scene'), {
       projects: featured,
       awards: profile.awards,
@@ -252,11 +290,13 @@ async function start() {
       skills: profile.skills.slice(0, 9),
       reducedMotion,
       character: hud.character,
+      look: hud.look,
       onOpenProject: openProject,
       onRollDie: rollDie,
       onGreet: () => hud.speak(`Hi! Roll the die to race to a project.`),
       onCoin: (n) => {
         hud.setCoins(n);
+        sfx.coin();
         if (n === coinsTotal) hud.speak('All coins collected. Nice run!');
       },
     });
@@ -268,9 +308,33 @@ async function start() {
   }
 
   scene.setStyle(hud.style);
+  document.body.classList.add('scene-ready');
   let smooth = window.scrollY;
   let previous = performance.now();
-  const solids = [...document.querySelectorAll('.solid, .index')];
+  // Posiciones guardadas: leerlas del DOM en cada cuadro hace ir lento al celular.
+  let ranges = [];
+  const measureSolids = () => {
+    ranges = [...document.querySelectorAll('.solid, .index')].map((el) => {
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      return [top, top + el.offsetHeight];
+    });
+  };
+  measureSolids();
+  window.addEventListener('resize', measureSolids);
+  window.addEventListener('load', measureSolids);
+  document.fonts?.ready.then(measureSolids);
+  const styleAt = (k) => {
+    const stop = k - 2;
+    if (stop >= 3.5 && stop < 5.5) return 'pixel';
+    if (stop >= 5.5 && stop < 7.5) return 'toon';
+    if (stop >= 7.5 && stop < 9.5) return 'wire';
+    const awardsAt = featured.length + (profile.passions?.length ?? 0);
+    if (stop >= awardsAt - 0.5 && stop < awardsAt + profile.awards.length - 0.5) return 'toon';
+    return '3d';
+  };
+  let slow = 0;
+  let frames = 0;
+  let idle = 0;
   const frame = (now) => {
     const y = window.scrollY;
     const dt = Math.min((now - previous) / 1000, 0.25);
@@ -279,12 +343,20 @@ async function start() {
     if (Math.abs(y - smooth) < 0.05) smooth = y;
     mapper.fadeCopy(smooth, reducedMotion);
     currentK = mapper.toPose(smooth);
+    hud.auto(styleAt(currentK));
     // Un capítulo 2D tapa toda la pantalla: no hace falta dibujar el 3D debajo.
-    const covered = solids.some((el) => {
-      const r = el.getBoundingClientRect();
-      return r.top <= 0 && r.bottom >= window.innerHeight;
-    });
-    if (!covered) scene.render(currentK);
+    const covered = ranges.some(([top, bottom]) => smooth >= top && smooth + window.innerHeight <= bottom);
+    idle = smooth === y ? idle + 1 : 0;
+    frames += 1;
+    const skip = LOW && idle > 30 && frames % 2;
+    if (!covered && !skip) {
+      scene.render(currentK, audioLevel());
+      slow = dt > 0.034 ? slow + 1 : Math.max(slow - 1, 0);
+      if (slow > 45) {
+        slow = 0;
+        scene.lowerQuality();
+      }
+    }
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);

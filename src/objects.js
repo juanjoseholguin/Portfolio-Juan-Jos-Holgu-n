@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { LOW } from './quality.js';
 
 const gloss = (color, extra = {}) =>
-  new THREE.MeshPhysicalMaterial({ color, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.15, ...extra });
+  LOW
+    ? new THREE.MeshStandardMaterial({ color, roughness: extra.roughness ?? 0.3 })
+    : new THREE.MeshPhysicalMaterial({ color, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.15, ...extra });
 const neon = (color, power = 2.4) =>
   new THREE.MeshStandardMaterial({ color: '#000000', emissive: color, emissiveIntensity: power, roughness: 0.4 });
 
@@ -10,7 +13,7 @@ function vinyl() {
   const g = new THREE.Group();
   const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.8, 0.05, 72), gloss('#07060c', { roughness: 0.3 }));
   g.add(disc);
-  for (let r = 0.85; r < 1.75; r += 0.13) {
+  for (let r = 0.85; !LOW && r < 1.75; r += 0.13) {
     const groove = new THREE.Mesh(new THREE.TorusGeometry(r, 0.006, 6, 72), gloss('#2a2640'));
     groove.rotation.x = Math.PI / 2;
     groove.position.y = 0.03;

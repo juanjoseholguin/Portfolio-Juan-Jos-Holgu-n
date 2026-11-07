@@ -81,5 +81,109 @@
       "title": "Design ties it together.",
       "text": "Pen tool, color, and type: where everything I love becomes something you can use."
     }
-  ]
+  ],
+  "projectCopy": {
+    "192151093": {
+      "name": "Holiday Stickers",
+      "description": "A holiday sticker set illustrated in Illustrator."
+    },
+    "193297007": {
+      "name": "Puss in Boots Poker Cards",
+      "description": "A poker card deck themed on Puss in Boots, made in Illustrator and Photoshop."
+    },
+    "195032543": {
+      "description": "A graphic design piece for Putumayo Records: Japan."
+    },
+    "195483745": {
+      "name": "Infographic: The Color Red",
+      "description": "An infographic about the color red, based on Eva Heller's work."
+    },
+    "195829491": {
+      "name": "Self-Portrait: Colors of My Personality",
+      "description": "A self-portrait that explores my personality through color."
+    },
+    "200378247": {
+      "name": "Sherlock vs. the World",
+      "description": "A graphic design piece made in Photoshop and Illustrator."
+    },
+    "205225273": {
+      "name": "Olympic Calligram",
+      "description": "A calligram themed on the Olympic Games, made in Illustrator and Photoshop."
+    },
+    "206810163": {
+      "name": "Telecom Colombia Rebrand",
+      "description": "A rebranding project and brand identity for Telecom Colombia."
+    },
+    "206810735": {
+      "name": "The Exposure Triangle",
+      "description": "A photography assignment exploring the exposure triangle."
+    },
+    "206815283": {
+      "description": "The logo and brand mark from the Telecom Colombia rebrand."
+    },
+    "207340831": {
+      "description": "A brochure for Greenpeace, designed in Illustrator and Photoshop."
+    },
+    "211102061": {
+      "name": "Manto Solar: Sunscreen E-Commerce",
+      "description": "E-commerce design for Manto Solar, a sunscreen brand, made in Figma, Illustrator, and Photoshop."
+    },
+    "213687773": {
+      "description": "An editorial magazine about game design, made in Photoshop and Figma."
+    },
+    "221577429": {
+      "name": "Infographic: Mary Magdalene in Ecstasy",
+      "description": "An infographic about the artwork Mary Magdalene in Ecstasy, made in Photoshop and Figma."
+    },
+    "221578125": {
+      "name": "Besos de Vino: Stop-Motion Poem",
+      "description": "A stop-motion animated poem. Winner of Best Audiovisual Design at Premio Equinoccio Icesi 2025."
+    },
+    "225070249": {
+      "name": "After Hours by The Weeknd: Lyric Video",
+      "description": "A lyric video for After Hours by The Weeknd, animated in After Effects."
+    },
+    "230018329": {
+      "name": "Sunflower Jack: Trailer",
+      "description": "A trailer for Sunflower Jack, a story I wrote and created. The visuals were made with the help of AI."
+    },
+    "230018955": {
+      "description": "An art book that reinterprets The Legend of Zelda: Ocarina of Time through the elegance and decorative detail of Rococo art, exploring characters, environments, interfaces, and narrative elements with a warm, hand-drawn feel."
+    },
+    "234035797": {
+      "name": "Fitness: UX Case Study",
+      "description": "A UX case study about fitness and health."
+    },
+    "234185511": {
+      "description": "App interface and graphic design for Espaiserman, made in Figma and Illustrator."
+    },
+    "236184621": {
+      "description": "UI design for Moova, a fitness app."
+    },
+    "239441539": {
+      "name": "GameState: Gaming Clip Social Network",
+      "description": "A conceptual social network for sharing gaming clips, with its app and interface designed in Figma.\n\nAll videogame characters, imagery, and trademarks belong to their respective owners and were used for illustrative and educational purposes in a design study."
+    },
+    "246316083": {
+      "description": "This project reimagines Lipton's website with a fresh, modern approach, improving navigation, visual appeal, and user interaction for a more engaging digital experience."
+    },
+    "247885537": {
+      "name": "Product Design: Premio Mario Hernández 2026",
+      "description": "A leather goods concept created for Premio Mario Hernández 2026: a luxury handbag inspired by Colombian coffee culture, with a geometric MH monogram pattern and materials such as vegetable leather."
+    },
+    "248445809": {
+      "description": "Web and UI/UX design for Care Cane, a walking cane presented under the line \"The support that your bones need.\""
+    },
+    "250619175": {
+      "description": "A UI/UX and web design project for Uniwell, created in Figma."
+    },
+    "252246803": {
+      "name": "CollegePrep: Smart Budget Meal Planner",
+      "description": "A web app that helps college students plan healthy, affordable meals. It generates personalized meal plans based on budget, food preferences, and restrictions, and adds recipes, shopping lists, and expense tracking in a modern, responsive, accessible interface."
+    },
+    "256507675": {
+      "name": "Carrera a la Locura: Board Game",
+      "description": "A fast-paced competitive board game where players race through an unpredictable course of shortcuts, obstacles, and chaotic events. It pairs a physical board with a digital component built with basic code and NFC.\n\nCharacters are everyday objects turned into expressive racers, in a visual identity of retro 80s aesthetics, bold geometric shapes, and vibrant color. Winner of Best Visual Design at Premio Equinoccio Icesi 2026."
+    }
+  }
 }

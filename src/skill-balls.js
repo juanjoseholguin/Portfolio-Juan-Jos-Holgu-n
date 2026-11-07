@@ -1,18 +1,65 @@
 import * as THREE from 'three';
+import { LOW } from './quality.js';
 
-const COLORS = ['#ffc629', '#ff4b33', '#ffffff', '#2430e0', '#8d96ff'];
-const INK = new Set(['#ffc629', '#ffffff', '#ff4b33', '#8d96ff']);
+const BRANDS = {
+  Figma: { bg: '#1e1e1e', draw: figmaMark },
+  Illustrator: { bg: '#330000', mark: 'Ai', color: '#ff9a00' },
+  Photoshop: { bg: '#001e36', mark: 'Ps', color: '#31a8ff' },
+  'After Effects': { bg: '#00005b', mark: 'Ae', color: '#9999ff' },
+  JavaScript: { bg: '#f7df1e', mark: 'JS', color: '#111111' },
+  TypeScript: { bg: '#3178c6', mark: 'TS', color: '#ffffff' },
+  React: { bg: '#20232a', draw: reactMark },
+};
 
-function label(text, color) {
+function figmaMark(ctx) {
+  const r = 26;
+  const x = 128;
+  const y = 66;
+  const pill = (px, py, color, tl, tr, br, bl) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(px, py, r, r, [tl, tr, br, bl]);
+    ctx.fill();
+  };
+  pill(x - r, y - r * 1.5, '#f24e1e', r, 0, 0, r);
+  pill(x, y - r * 1.5, '#ff7262', 0, r, r, 0);
+  pill(x - r, y - r * 0.5, '#a259ff', r, 0, 0, r);
+  ctx.fillStyle = '#1abcfe';
+  ctx.beginPath();
+  ctx.arc(x + r / 2, y, r / 2, 0, Math.PI * 2);
+  ctx.fill();
+  pill(x - r, y + r * 0.5, '#0acf83', r, 0, r, r);
+}
+
+function reactMark(ctx) {
+  ctx.strokeStyle = '#61dafb';
+  ctx.lineWidth = 5;
+  for (const a of [0, Math.PI / 3, -Math.PI / 3]) {
+    ctx.beginPath();
+    ctx.ellipse(128, 64, 46, 18, a, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#61dafb';
+  ctx.beginPath();
+  ctx.arc(128, 64, 8, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function label(text) {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 128;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = color;
-  ctx.font = `700 ${text.length > 8 ? 34 : 42}px Poppins, sans-serif`;
+  const brand = BRANDS[text];
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, 128, 64);
+  if (brand?.draw) {
+    brand.draw(ctx);
+  } else {
+    ctx.fillStyle = brand?.color ?? '#120a2c';
+    ctx.font = brand ? '700 72px Poppins, sans-serif' : '700 34px Poppins, sans-serif';
+    ctx.fillText(brand?.mark ?? text, 128, 66);
+  }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
@@ -22,15 +69,17 @@ function label(text, color) {
 export function makeSkillBalls(skills) {
   const group = new THREE.Group();
   const balls = skills.map((skill, i) => {
-    const color = COLORS[i % COLORS.length];
+    const color = BRANDS[skill]?.bg ?? ['#c6ff3d', '#ff2bd6', '#27e6ff'][i % 3];
     const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 36, 28),
-      new THREE.MeshPhysicalMaterial({ color, roughness: 0.3, clearcoat: 0.8 }),
+      new THREE.SphereGeometry(1, LOW ? 22 : 36, LOW ? 16 : 28),
+      LOW
+        ? new THREE.MeshStandardMaterial({ color, roughness: 0.35, emissive: color, emissiveIntensity: 0.5 })
+        : new THREE.MeshPhysicalMaterial({ color, roughness: 0.3, clearcoat: 0.8, emissive: color, emissiveIntensity: 0.3 }),
     );
     mesh.castShadow = true;
     const sprite = new THREE.Sprite(
       new THREE.SpriteMaterial({
-        map: label(skill, INK.has(color) ? '#0c0e2b' : '#ffffff'),
+        map: label(skill),
         transparent: true,
         toneMapped: false,
         depthTest: false,

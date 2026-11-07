@@ -1,3 +1,5 @@
+import { audioContext, duckAmbient, frequencyBars, output, sfx } from './audio.js';
+
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const base = import.meta.env.BASE_URL;
 const TV_VIDEO = 'https://www-ccv.adobe.io/v1/player/ccv/3WJghZV8MWP/embed?api_key=behance1&bgcolor=%23191919';
@@ -80,6 +82,7 @@ export function playChapter() {
             <h3>Make a beat</h3>
             <button type="button" class="btn beat-toggle" aria-pressed="false">Play beat</button>
           </div>
+          <canvas class="bars" width="480" height="60" aria-hidden="true"></canvas>
           <div class="pads">
             ${ROWS.map(
               (row, r) => `<div class="pad-row" role="group" aria-label="${row}">
@@ -225,7 +228,7 @@ function initBeat() {
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(volume, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + length);
-    source.connect(filter).connect(gain).connect(ctx.destination);
+    source.connect(filter).connect(gain).connect(output());
     source.start(time);
   };
   const tone = (time, type, from, to, length, volume) => {
@@ -236,7 +239,7 @@ function initBeat() {
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(volume, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + length);
-    osc.connect(gain).connect(ctx.destination);
+    osc.connect(gain).connect(output());
     osc.start(time);
     osc.stop(time + length);
   };
@@ -254,6 +257,7 @@ function initBeat() {
     toggle.setAttribute('aria-pressed', 'false');
     pads.forEach((p) => p.classList.remove('now'));
     section.classList.remove('beating');
+    duckAmbient(false);
   };
   const tick = () => {
     const time = ctx.currentTime + 0.01;
@@ -262,13 +266,13 @@ function initBeat() {
       p.classList.toggle('now', here);
       if (here && p.getAttribute('aria-pressed') === 'true') sounds[Number(p.dataset.row)](time, step);
     });
-    if (!reduced && step % 2 === 0) section.style.setProperty('--hue', `${(step * 22) % 360}deg`);
+    if (!reduced && step % 2 === 0) section.style.setProperty('--glow', 0.55 + (step % 4 === 0 ? 0.45 : 0));
     step = (step + 1) % 8;
   };
   toggle.addEventListener('click', () => {
     if (timer) return stop();
-    ctx ??= new AudioContext();
-    ctx.resume();
+    ctx = audioContext();
+    duckAmbient(true);
     toggle.textContent = 'Stop beat';
     toggle.setAttribute('aria-pressed', 'true');
     section.classList.add('beating');
@@ -276,6 +280,22 @@ function initBeat() {
     timer = setInterval(tick, 150);
   });
   window.addEventListener('scroll', () => { if (timer && !inView(section)) stop(); }, { passive: true });
+
+  const bars = section.querySelector('.bars');
+  const barCtx = bars.getContext('2d');
+  const freq = new Uint8Array(64);
+  const drawBars = () => {
+    requestAnimationFrame(drawBars);
+    if (!inView(bars)) return;
+    frequencyBars(freq);
+    barCtx.clearRect(0, 0, 480, 60);
+    for (let i = 0; i < 40; i++) {
+      const h = (freq[i] / 255) * 56 + 2;
+      barCtx.fillStyle = ['#b14dff', '#ff2bd6', '#27e6ff', '#c6ff3d'][i % 4];
+      barCtx.fillRect(i * 12, 60 - h, 9, h);
+    }
+  };
+  drawBars();
 }
 
 function initKeepy() {
@@ -295,6 +315,7 @@ function initKeepy() {
     ball.vy = -640;
     ball.vx = (ball.x - fromX) * 5 + (Math.random() - 0.5) * 130;
     touches += 1;
+    sfx.kick();
     best = Math.max(best, touches);
     now.textContent = touches;
     bestEl.textContent = best;
@@ -353,6 +374,7 @@ function initKeepy() {
           ball.y = H - R - 4;
           ball.vy = 0;
           ball.vx = 0;
+          if (touches > 0) sfx.land();
           touches = 0;
           now.textContent = 0;
         }
@@ -377,11 +399,13 @@ function initTv() {
   let locked = false;
   const closeVideo = () => {
     screen.querySelector('iframe')?.remove();
+    duckAmbient(false);
     screen.classList.remove('on');
     locked = false;
     play.hidden = false;
   };
   play.addEventListener('click', () => {
+    duckAmbient(true);
     const iframe = document.createElement('iframe');
     iframe.src = TV_VIDEO;
     iframe.title = 'Besos de Vino, stop-motion animated poem';

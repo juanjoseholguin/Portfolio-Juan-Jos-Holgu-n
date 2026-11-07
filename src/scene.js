@@ -5,6 +5,7 @@ import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect.js';
 import { makeCharacter } from './characters.js';
 import { makeSkillBalls } from './skill-balls.js';
 import { makeClusters } from './objects.js';
+import { LOW } from './quality.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -23,7 +24,9 @@ const CARD = { w: 5.2, h: 4.06, gap: 15, firstZ: -66, baseY: -0.6 };
 const TAN_HALF_FOV = Math.tan(THREE.MathUtils.degToRad(17.5));
 
 const glossy = (color, extra = {}) =>
-  new THREE.MeshPhysicalMaterial({ color, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.2, ...extra });
+  LOW
+    ? new THREE.MeshStandardMaterial({ color, roughness: 0.32 })
+    : new THREE.MeshPhysicalMaterial({ color, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.2, ...extra });
 const gold = () => new THREE.MeshStandardMaterial({ color: '#ffc629', metalness: 1, roughness: 0.24 });
 
 /* Piezas del juego */
@@ -171,8 +174,8 @@ function keyLabel(text, fg) {
 
 /* Escena completa */
 
-export function createScene(canvas, { projects, awards, links, skills, reducedMotion, character, onOpenProject, onCoin, onRollDie, onGreet }) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+export function createScene(canvas, { projects, awards, links, skills, reducedMotion, character, look: avatarLook, onOpenProject, onCoin, onRollDie, onGreet }) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
 
@@ -194,7 +197,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
 
   /* Planeta */
   const planet = new THREE.Mesh(
-    new THREE.SphereGeometry(PLANET.radius, 96, 64),
+    new THREE.SphereGeometry(PLANET.radius, LOW ? 56 : 80, LOW ? 36 : 56),
     new THREE.ShaderMaterial({
       uniforms: { uBase: { value: COLORS.ultra.clone() }, uRim: { value: new THREE.Color('#f08bff') } },
       vertexShader: `
@@ -312,15 +315,6 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     const group = new THREE.Group();
     const front = new THREE.Mesh(frontGeo, new THREE.MeshBasicMaterial({ color: '#cdd2f5', toneMapped: false }));
     front.userData.project = project;
-    if (project.cover) {
-      loader.load(project.cover, (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.anisotropy = maxAniso;
-        front.material.map = texture;
-        front.material.color.set('#ffffff');
-        front.material.needsUpdate = true;
-      });
-    }
     const back = new THREE.Mesh(backGeo, backMat);
     back.castShadow = true;
     group.add(front, back);
@@ -334,12 +328,38 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   });
 
   /* Personaje jugable y monedas de la pista */
+  // Las portadas solo ocupan memoria cuando están cerca de la cámara.
+  function updateCovers(k) {
+    cards.forEach((card, index) => {
+      const front = card.children[0];
+      const distance = Math.abs(k - 2 - index);
+      const { project } = front.userData;
+      if (distance < 1.7 && !front.userData.cover && project.cover) {
+        front.userData.cover = 'loading';
+        loader.load(project.cover, (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.anisotropy = LOW ? 2 : maxAniso;
+          front.userData.cover = texture;
+          front.material.map = texture;
+          front.material.color.set('#ffffff');
+          front.material.needsUpdate = true;
+        });
+      } else if (distance > 3.5 && front.userData.cover?.isTexture) {
+        front.userData.cover.dispose();
+        front.userData.cover = null;
+        front.material.map = null;
+        front.material.color.set('#2a1f55');
+        front.material.needsUpdate = true;
+      }
+    });
+  }
+
   const racer = new THREE.Group();
   scene.add(racer);
   let hero = null;
-  function setCharacter(kind) {
+  function setCharacter(kind, look) {
     if (hero) racer.remove(hero.root);
-    hero = makeCharacter(kind);
+    hero = makeCharacter(kind, look);
     racer.add(hero.root);
     applyStyle();
     hero.jump();
@@ -507,7 +527,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     const penW = penH * aspect;
     skillBalls.setBounds(
       narrow
-        ? { minX: -penW, maxX: penW, minY: -penH, maxY: 0, r: 0.56 }
+        ? { minX: -penW, maxX: penW, minY: -penH, maxY: -2, r: 0.5 }
         : { minX: -penW * 0.04, maxX: penW, minY: -penH, maxY: penH, r: Math.min(penW * 0.14, 1.05) },
     );
     poses.push({
@@ -534,21 +554,21 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     const w = window.innerWidth;
     const h = window.innerHeight;
     const coarse = w < 760;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.3 : 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, ratioCap));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     pixelTarget.setSize(Math.round(190 * camera.aspect), 190);
-    composer.setPixelRatio(renderer.getPixelRatio());
-    composer.setSize(w, h);
-    useBloom = !coarse;
-    renderer.shadowMap.enabled = !coarse;
-    sun.castShadow = !coarse;
+    composer?.setPixelRatio(renderer.getPixelRatio());
+    composer?.setSize(w, h);
+    renderer.shadowMap.enabled = !LOW;
+    sun.castShadow = !LOW;
     floaters.forEach((f) => place(f, f.userData.base, camera.aspect));
     scene.fog.near = coarse ? 42 : 22;
     scene.fog.far = coarse ? 110 : 60;
     buildPoses(camera.aspect);
   }
+  let ratioCap = LOW ? 1.2 : 1.5;
   /* Estilos visuales: 3D, pixel, toon y wireframe */
   const pixelTarget = new THREE.WebGLRenderTarget(320, 190, {
     minFilter: THREE.NearestFilter,
@@ -583,11 +603,13 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     ),
   );
   const pixelUniforms = quadScene.children[0].material.uniforms;
-  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
-  composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(512, 512), 0.16, 0.4, 1.05));
-  composer.addPass(new OutputPass());
-  let useBloom = true;
+  let composer = null;
+  if (!LOW) {
+    composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 2 }));
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.16, 0.4, 1.05));
+    composer.addPass(new OutputPass());
+  }
   const outline = new OutlineEffect(renderer, { defaultThickness: 0.006, defaultColor: [0.05, 0.055, 0.17] });
   outline.autoClear = true;
   planet.material.userData.outlineParameters = { visible: false };
@@ -610,6 +632,8 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
       if (styleName === 'toon') {
         original.userData.toon ??= new THREE.MeshToonMaterial({
           color: original.color,
+          emissive: original.emissive,
+          emissiveIntensity: original.emissiveIntensity,
           gradientMap: toonSteps,
           transparent: original.transparent,
           opacity: original.opacity,
@@ -627,7 +651,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   }
 
   resize();
-  setCharacter(character);
+  setCharacter(character, avatarLook);
 
   /* Interacción */
   const pointer = new THREE.Vector2(0, 0);
@@ -691,7 +715,8 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   let lastK = 0;
   let speed = 0;
 
-  function render(k) {
+  function render(k, level = 0) {
+    updateCovers(k);
     const dt = clock.getDelta();
     const time = reducedMotion ? 0 : clock.elapsedTime;
     const last = poses.length - 1;
@@ -816,8 +841,8 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     faderKnob.position.z = 2 - THREE.MathUtils.clamp(k - consoleStart + 0.6, 0, 1.6) * 2.5;
 
     const atConsole = k > consoleStart + 0.2;
-    neonA.intensity = atConsole ? 14 : 70;
-    neonB.intensity = atConsole ? 10 : 50;
+    neonA.intensity = (atConsole ? 14 : 70) * (1 + level * 1.6);
+    neonB.intensity = (atConsole ? 10 : 50) * (1 + level * 1.6);
     neonA.position.set(look.x - 7, look.y + 5, look.z + 7);
     neonB.position.set(look.x + 8, look.y - 3, look.z + 5);
     sun.position.set(pos.x + 7, 16, look.z + 12);
@@ -831,12 +856,21 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
       renderer.render(quadScene, quadCamera);
     } else if (styleName === 'toon') {
       outline.render(scene, camera);
-    } else if (styleName === '3d' && useBloom) {
+    } else if (styleName === '3d' && composer) {
       composer.render();
     } else {
       renderer.render(scene, camera);
     }
   }
 
-  return { render, setStyle, setCharacter, jump: () => hero.jump() };
+  // Si el equipo no da abasto, baja la calidad en lugar de ir a tirones.
+  function lowerQuality() {
+    composer = null;
+    ratioCap = Math.max(ratioCap - 0.25, 0.75);
+    renderer.shadowMap.enabled = false;
+    sun.castShadow = false;
+    resize();
+  }
+
+  return { render, setStyle, setCharacter, lowerQuality, jump: () => hero.jump() };
 }
