@@ -1,6 +1,6 @@
 {
   "username": "juanjoholgun1",
-  "syncedAt": "2026-11-08T16:58:05.847Z",
+  "syncedAt": "2026-11-09T21:22:06.178Z",
   "projects": [
     {
       "id": "256507675",
@@ -28,7 +28,7 @@
       "url": "https://www.behance.net/gallery/250619175/Uniwell",
       "publishedOn": 1780682093,
       "description": "",
-      "views": 56,
+      "views": 57,
       "appreciations": 2,
       "cover": "covers/250619175.webp"
     },
@@ -68,7 +68,7 @@
       "url": "https://www.behance.net/gallery/239441539/GameState-Gaming-Clip-Social-Network-%28UXUI%29",
       "publishedOn": 1764306465,
       "description": "Disclaimer:\nAll videogame characters, imagery, and trademarks featured in this project are the property of their respective owners. These assets were used strictly for illustrative and educational purposes within a design study. We do not claim ownership over any third-party content. Our work is limited to the conceptual app design and user interface showcased in this project.",
-      "views": 80,
+      "views": 81,
       "appreciations": 4,
       "cover": "covers/239441539.webp"
     },
@@ -83,16 +83,6 @@
       "cover": "covers/236184621.webp"
     },
     {
-      "id": "234185511",
-      "name": "Espaiserman App",
-      "url": "https://www.behance.net/gallery/234185511/Espaiserman-App",
-      "publishedOn": 1757335881,
-      "description": "",
-      "views": 32,
-      "appreciations": 1,
-      "cover": "covers/234185511.webp"
-    },
-    {
       "id": "234035797",
       "name": "Fitness || UX Case Study",
       "url": "https://www.behance.net/gallery/234035797/Fitness-UX-Case-Study",
@@ -103,6 +93,26 @@
       "cover": "covers/234035797.webp"
     },
     {
+      "id": "221835013",
+      "name": "Titeres | Bambalina web",
+      "url": "https://www.behance.net/gallery/221835013/Titeres-Bambalina-web",
+      "publishedOn": 1742413941,
+      "description": "",
+      "views": 69,
+      "appreciations": 1,
+      "cover": "covers/221835013.webp"
+    },
+    {
+      "id": "221578125",
+      "name": "StopMotion (Animation) Poema \"Besos de Vino\"",
+      "url": "https://www.behance.net/gallery/221578125/StopMotion-%28Animation%29-Poema-Besos-de-Vino",
+      "publishedOn": 1742158527,
+      "description": "",
+      "views": 37,
+      "appreciations": 4,
+      "cover": "covers/221578125.webp"
+    },
+    {
       "id": "213687773",
       "name": "Game Design Magazine",
       "url": "https://www.behance.net/gallery/213687773/Game-Design-Magazine",
@@ -111,6 +121,16 @@
       "views": 140,
       "appreciations": 4,
       "cover": "covers/213687773.webp"
+    },
+    {
+      "id": "234185511",
+      "name": "Espaiserman App",
+      "url": "https://www.behance.net/gallery/234185511/Espaiserman-App",
+      "publishedOn": 1757335881,
+      "description": "",
+      "views": 32,
+      "appreciations": 1,
+      "cover": "covers/234185511.webp"
     },
     {
       "id": "206810163",
@@ -149,13 +169,6 @@
       "url": "https://www.behance.net/gallery/225070249/After-Hours-The-Weeknd-Video-Lyrics-en-After-Effects",
       "publishedOn": null,
       "cover": "covers/225070249.webp"
-    },
-    {
-      "id": "221578125",
-      "name": "StopMotion (Animation) Poema \"Besos de Vino\"",
-      "url": "https://www.behance.net/gallery/221578125/StopMotion-(Animation)-Poema-Besos-de-Vino",
-      "publishedOn": null,
-      "cover": "covers/221578125.webp"
     },
     {
       "id": "230018955",
