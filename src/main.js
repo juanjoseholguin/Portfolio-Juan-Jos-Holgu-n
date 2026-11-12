@@ -139,6 +139,7 @@ function render(profile, projects, featured) {
           ${profile.email ? `<li><a href="mailto:${esc(profile.email)}">${esc(profile.email)}</a></li>` : ''}
           ${links.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join('')}
         </ul>
+        ${profile.instagram ? `<a class="btn btn-ig" href="https://instagram.com/${esc(profile.instagram)}" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="currentColor"/></svg>Follow @${esc(profile.instagram)}</a>` : ''}
         <p class="colophon">${esc(profile.name)}, ${new Date().getFullYear()}</p>
       </div></div>
     </section>`;
@@ -207,10 +208,28 @@ function scrollMapper() {
   };
 }
 
+// Primero Behance en vivo; si tarda o falla, la última copia guardada.
+async function loadProjects() {
+  const saved = () => fetch(dataUrl('projects.json')).then((r) => r.json());
+  if (import.meta.env.DEV) return saved();
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3500);
+    const res = await fetch(`${import.meta.env.BASE_URL}api/projects`, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error(res.status);
+    const live = await res.json();
+    if (!live.projects?.length) throw new Error('empty');
+    return live;
+  } catch {
+    return saved();
+  }
+}
+
 async function start() {
   const [profile, synced] = await Promise.all([
     fetch(dataUrl('profile.json')).then((r) => r.json()),
-    fetch(dataUrl('projects.json')).then((r) => r.json()),
+    loadProjects(),
   ]);
   const hidden = new Set(profile.hiddenProjects.map(String));
   const projects = [...(profile.extraProjects ?? []), ...synced.projects]

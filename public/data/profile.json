@@ -139,6 +139,10 @@
       "name": "Besos de Vino: Stop-Motion Poem",
       "description": "A stop-motion animated poem. Winner of Best Audiovisual Design at Premio Equinoccio Icesi 2025."
     },
+    "221835013": {
+      "name": "Títeres Bambalina: Website",
+      "description": "A website project for Títeres Bambalina."
+    },
     "225070249": {
       "name": "After Hours by The Weeknd: Lyric Video",
       "description": "A lyric video for After Hours by The Weeknd, animated in After Effects."
@@ -184,6 +188,11 @@
     "256507675": {
       "name": "Carrera a la Locura: Board Game",
       "description": "A fast-paced competitive board game where players race through an unpredictable course of shortcuts, obstacles, and chaotic events. It pairs a physical board with a digital component built with basic code and NFC.\n\nCharacters are everyday objects turned into expressive racers, in a visual identity of retro 80s aesthetics, bold geometric shapes, and vibrant color. Winner of Best Visual Design at Premio Equinoccio Icesi 2026."
+    },
+    "258404671": {
+      "name": "Yango: Redesigning Digital Trust",
+      "description": "An academic UX/UI redesign that explores how to improve the perception of trust in Yango's ride-hailing experience, focused on its Economy service in Cali, Colombia.\n\nThrough exploratory user research, we studied how people judge an app's reliability before getting into a stranger's car, and found opportunities to make safety information more visible, improve driver identification, and clarify ride requirements."
     }
-  }
+  },
+  "instagram": "juanjoseholguin_"
 }

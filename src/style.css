@@ -551,3 +551,5 @@ body[data-style='wire'] .stop .copy { background: rgb(8 6 15 / 0.9); border: 1px
   .light-hint { display: none; }
   .about-head { align-items: center; }
 }
+
+.btn-ig { display: inline-flex; align-items: center; gap: 10px; margin-top: 1.4em; background: linear-gradient(100deg, #7a2bff, #ff2bd6 55%, #ff9a3c); }

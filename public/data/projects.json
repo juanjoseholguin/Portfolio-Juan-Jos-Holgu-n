@@ -1,14 +1,38 @@
 {
   "username": "juanjoholgun1",
-  "syncedAt": "2026-11-11T18:30:02.432Z",
+  "syncedAt": "2026-11-12T16:29:32.888Z",
+  "window": [
+    "258404671",
+    "256507675",
+    "252246803",
+    "250619175",
+    "248445809",
+    "246316083",
+    "239441539",
+    "236184621",
+    "221835013",
+    "247885537",
+    "234035797",
+    "213687773"
+  ],
   "projects": [
+    {
+      "id": "258404671",
+      "name": "Redesigning Digital Trust in Yango | Yango UX/UI",
+      "url": "https://www.behance.net/gallery/258404671/Redesigning-Digital-Trust-in-Yango-Yango-UXUI",
+      "publishedOn": 1794494076,
+      "description": "This is an academic UX/UI redesign project focused on exploring and improving the perception of trust in Yango's ride-hailing experience, specifically its Economy service in Cali, Colombia.\n\nThrough exploratory user research, we investigated how people evaluate an app's reliability before getting into a stranger's car. We analyzed users' perceptions of the interface, driver information, safety features, ride requirements, and institutional support.\n\nThe research findings revealed opportunities to make safety information more visible, improve driver identification, clarify ride requirements, and provide more accessible support and protection features.\n\nBased on these insights, we developed a set of interface redesign proposals that aim to reduce uncertainty and help users make more informed decisions.\n\nThis project was developed for academic purposes and is not affiliated with, commissioned by, or endorsed by Yango.",
+      "views": 8,
+      "appreciations": 4,
+      "cover": "covers/258404671.webp"
+    },
     {
       "id": "256507675",
       "name": "\"Carrera a la locura\" Board Game",
       "url": "https://www.behance.net/gallery/256507675/Carrera-a-la-locura-Board-Game",
       "publishedOn": 1790849037,
       "description": "Carrera a la Locura is a fast-paced competitive board game where players race through an unpredictable course filled with shortcuts, obstacles, special events, and chaotic interactions.\n\nThe project combines physical board game design with a digital component, creating a playful experience where every race can feel different. Players choose unique characters, each with their own personality and special ability, while the board introduces unexpected events that can change the course of the race.\n\nThe visual identity combines retro 80s aesthetics, bold geometric shapes, vibrant colors, real-world objects, and simplified cartoon elements. Characters are built around everyday objects transformed into expressive racers, creating a playful visual language that connects the physical components, cards, tiles, characters, and packaging.\n\nThe project explores character design, board game systems, visual identity, game mechanics, physical prototyping, and digital interaction as one cohesive exper",
-      "views": 92,
+      "views": 94,
       "appreciations": 6,
       "cover": "covers/256507675.webp"
     },
@@ -28,7 +52,7 @@
       "url": "https://www.behance.net/gallery/250619175/Uniwell",
       "publishedOn": 1780682093,
       "description": "",
-      "views": 57,
+      "views": 60,
       "appreciations": 2,
       "cover": "covers/250619175.webp"
     },
@@ -41,16 +65,6 @@
       "views": 54,
       "appreciations": 3,
       "cover": "covers/248445809.webp"
-    },
-    {
-      "id": "247885537",
-      "name": "Diseño de Producto – Premio Mario Hernández 2026",
-      "url": "https://www.behance.net/gallery/247885537/Diseno-de-Producto-Premio-Mario-Hernandez-2026",
-      "publishedOn": 1776640516,
-      "description": "Este proyecto corresponde al desarrollo de un concepto de diseño de producto en marroquinería, realizado en el marco del Premio Mario Hernández 2026, enfocado en la creación de un bolso de lujo que integra identidad de marca, diseño de patrón y exploración material.\n\nEl proceso incluyó:\n\nDesarrollo de concepto inspirado en la cultura cafetera colombiana\nDiseño de patrón geométrico con monograma (MH) aplicado sobre superficie\nExploración de materiales como cuero vegetal y acabados premium\nPropuesta formal del bolso tipo bucket bag\nVisualización mediante mockups hiperrealistas\n\nLa propuesta busca resaltar la riqueza cultural de Colombia a través de una estética contemporánea, combinando tradición artesanal con lenguaje visual de lujo.",
-      "views": 301,
-      "appreciations": 6,
-      "cover": "covers/247885537.webp"
     },
     {
       "id": "246316083",
@@ -83,16 +97,6 @@
       "cover": "covers/236184621.webp"
     },
     {
-      "id": "234035797",
-      "name": "Fitness || UX Case Study",
-      "url": "https://www.behance.net/gallery/234035797/Fitness-UX-Case-Study",
-      "publishedOn": 1757083834,
-      "description": "",
-      "views": 76,
-      "appreciations": 3,
-      "cover": "covers/234035797.webp"
-    },
-    {
       "id": "221835013",
       "name": "Titeres | Bambalina web",
       "url": "https://www.behance.net/gallery/221835013/Titeres-Bambalina-web",
@@ -103,14 +107,24 @@
       "cover": "covers/221835013.webp"
     },
     {
-      "id": "221578125",
-      "name": "StopMotion (Animation) Poema \"Besos de Vino\"",
-      "url": "https://www.behance.net/gallery/221578125/StopMotion-%28Animation%29-Poema-Besos-de-Vino",
-      "publishedOn": 1742158527,
+      "id": "247885537",
+      "name": "Diseño de Producto – Premio Mario Hernández 2026",
+      "url": "https://www.behance.net/gallery/247885537/Diseno-de-Producto-Premio-Mario-Hernandez-2026",
+      "publishedOn": 1776640516,
+      "description": "Este proyecto corresponde al desarrollo de un concepto de diseño de producto en marroquinería, realizado en el marco del Premio Mario Hernández 2026, enfocado en la creación de un bolso de lujo que integra identidad de marca, diseño de patrón y exploración material.\n\nEl proceso incluyó:\n\nDesarrollo de concepto inspirado en la cultura cafetera colombiana\nDiseño de patrón geométrico con monograma (MH) aplicado sobre superficie\nExploración de materiales como cuero vegetal y acabados premium\nPropuesta formal del bolso tipo bucket bag\nVisualización mediante mockups hiperrealistas\n\nLa propuesta busca resaltar la riqueza cultural de Colombia a través de una estética contemporánea, combinando tradición artesanal con lenguaje visual de lujo.",
+      "views": 301,
+      "appreciations": 6,
+      "cover": "covers/247885537.webp"
+    },
+    {
+      "id": "234035797",
+      "name": "Fitness || UX Case Study",
+      "url": "https://www.behance.net/gallery/234035797/Fitness-UX-Case-Study",
+      "publishedOn": 1757083834,
       "description": "",
-      "views": 37,
-      "appreciations": 4,
-      "cover": "covers/221578125.webp"
+      "views": 76,
+      "appreciations": 3,
+      "cover": "covers/234035797.webp"
     },
     {
       "id": "213687773",
@@ -121,6 +135,16 @@
       "views": 140,
       "appreciations": 4,
       "cover": "covers/213687773.webp"
+    },
+    {
+      "id": "221578125",
+      "name": "StopMotion (Animation) Poema \"Besos de Vino\"",
+      "url": "https://www.behance.net/gallery/221578125/StopMotion-%28Animation%29-Poema-Besos-de-Vino",
+      "publishedOn": 1742158527,
+      "description": "",
+      "views": 37,
+      "appreciations": 4,
+      "cover": "covers/221578125.webp"
     },
     {
       "id": "234185511",
