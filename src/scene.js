@@ -414,23 +414,24 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     { c: '#ff2bd6', t: '#120a2c' },
     { c: '#cfcbea', t: '#120a2c' },
     { c: '#7a2bff', t: '#ffffff' },
+    { c: '#ff8a3d', t: '#120a2c' },
   ];
-  const keys = links.slice(0, 4).map((link, i) => {
+  const keys = links.slice(0, 6).map((link, i) => {
     const style = keyStyles[i];
     const group = new THREE.Group();
     const cap = new THREE.Mesh(
-      new RoundedBoxGeometry(2.3, 0.55, 2.3, 6, 0.2),
+      new RoundedBoxGeometry(1.8, 0.55, 2.1, 6, 0.2),
       new THREE.MeshStandardMaterial({ color: style.c, roughness: 0.6, envMapIntensity: 0.35 }),
     );
     cap.castShadow = true;
     const top = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.8, 1.8),
+      new THREE.PlaneGeometry(1.6, 1.6),
       new THREE.MeshBasicMaterial({ map: keyLabel(link.label, style.t), transparent: true, toneMapped: false }),
     );
     top.rotation.x = -Math.PI / 2;
     top.position.y = 0.279;
     group.add(cap, top);
-    group.position.set(-3.1 + (i % 2) * 2.7, 0.55, -1.35 + Math.floor(i / 2) * 2.7);
+    group.position.set(-3.45 + (i % 3) * 2.05, 0.55, -1.25 + Math.floor(i / 3) * 2.5);
     cap.userData.link = link;
     top.userData.link = link;
     group.userData.rest = group.position.y;

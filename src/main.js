@@ -139,7 +139,6 @@ function render(profile, projects, featured) {
           ${profile.email ? `<li><a href="mailto:${esc(profile.email)}">${esc(profile.email)}</a></li>` : ''}
           ${links.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join('')}
         </ul>
-        ${profile.instagram ? `<a class="btn btn-ig" href="https://instagram.com/${esc(profile.instagram)}" target="_blank" rel="noopener"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="currentColor"/></svg>Follow @${esc(profile.instagram)}</a>` : ''}
         <p class="colophon">${esc(profile.name)}, ${new Date().getFullYear()}</p>
       </div></div>
     </section>`;
@@ -304,6 +303,7 @@ async function start() {
       awards: profile.awards,
       links: [
         ...profile.links.filter((l) => l.url).slice(0, 3),
+        ...(profile.instagram ? [{ label: 'Instagram', url: `https://instagram.com/${profile.instagram}` }] : []),
         ...(profile.email ? [{ label: 'Email', url: `mailto:${profile.email}` }] : []),
       ],
       skills: profile.skills.slice(0, 9),
