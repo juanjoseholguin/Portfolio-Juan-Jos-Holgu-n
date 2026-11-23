@@ -1,6 +1,6 @@
 {
   "username": "juanjoholgun1",
-  "syncedAt": "2026-11-23T01:46:32.773Z",
+  "syncedAt": "2026-11-23T12:54:21.216Z",
   "window": [
     "258404671",
     "256507675",
@@ -16,6 +16,14 @@
     "213687773"
   ],
   "projects": [
+    {
+      "id": "258878569",
+      "name": "LORE. Design System ? A story worth keeping",
+      "url": "https://www.behance.net/gallery/258878569/LORE-Design-System-A-story-worth-keeping",
+      "publishedOn": 1795400558,
+      "description": "LORE. is a design system for an app that turns shared memories into an editorial book. Brand, foundations, 24 components, documentation and a playable prototype. Team 5: Juan José Holguín, Dayan Miranda, Mariana Parra, Mariana Galvis Posada.",
+      "cover": "covers/258878569.webp"
+    },
     {
       "id": "258404671",
       "name": "Redesigning Digital Trust in Yango | Yango UX/UI",
