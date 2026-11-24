@@ -1,6 +1,6 @@
 {
   "username": "juanjoholgun1",
-  "syncedAt": "2026-11-23T12:54:21.216Z",
+  "syncedAt": "2026-11-24T02:14:55.056Z",
   "window": [
     "258404671",
     "256507675",
@@ -17,12 +17,12 @@
   ],
   "projects": [
     {
-      "id": "258878569",
-      "name": "LORE. Design System ? A story worth keeping",
-      "url": "https://www.behance.net/gallery/258878569/LORE-Design-System-A-story-worth-keeping",
-      "publishedOn": 1795400558,
-      "description": "LORE. is a design system for an app that turns shared memories into an editorial book. Brand, foundations, 24 components, documentation and a playable prototype. Team 5: Juan José Holguín, Dayan Miranda, Mariana Parra, Mariana Galvis Posada.",
-      "cover": "covers/258878569.webp"
+      "id": "258911583",
+      "name": "LORE. Design System. A story worth keeping",
+      "url": "https://www.behance.net/gallery/258911583/LORE-Design-System-A-story-worth-keeping",
+      "publishedOn": 1795448948,
+      "description": "LORE. is a design system for an app that turns shared memories into a curated, editorial book. Not everything. Just what mattered. The project includes a published Foundations Library (color variables, semantic tokens, typography, spacing, grid, effects and brand stickers), a Components Library with 24 reusable components with variants, properties and states, documentation in Zeroheight and Figma, and a fully navigable prototype for desktop and mobile (88 screens each). Live case study: lore-design-system.vercel.app · Documentation (Zeroheight): zeroheight.com/4ae49e34f · Foundations Library (Figma Community): figma.com/community/file/1702745948478079515 · Components Library (Figma Community): figma.com/community/file/1702746960043696673 · Prototype: figma.com/proto/8Ob3jND79257cva1kPmCnW",
+      "cover": "covers/258911583.webp"
     },
     {
       "id": "258404671",
@@ -133,6 +133,14 @@
       "views": 76,
       "appreciations": 3,
       "cover": "covers/234035797.webp"
+    },
+    {
+      "id": "258878569",
+      "name": "LORE. Design System ? A story worth keeping",
+      "url": "https://www.behance.net/gallery/258878569/LORE-Design-System-A-story-worth-keeping",
+      "publishedOn": 1795400558,
+      "description": "LORE. is a design system for an app that turns shared memories into an editorial book. Brand, foundations, 24 components, documentation and a playable prototype. Team 5: Juan José Holguín, Dayan Miranda, Mariana Parra, Mariana Galvis Posada.",
+      "cover": "covers/258878569.webp"
     },
     {
       "id": "213687773",
