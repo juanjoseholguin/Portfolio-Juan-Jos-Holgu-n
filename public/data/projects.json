@@ -1,6 +1,6 @@
 {
   "username": "juanjoholgun1",
-  "syncedAt": "2026-11-26T03:36:31.718Z",
+  "syncedAt": "2026-11-26T16:57:53.500Z",
   "window": [
     "258404671",
     "256507675",
@@ -16,6 +16,14 @@
     "213687773"
   ],
   "projects": [
+    {
+      "id": "259082025",
+      "name": "HireFast · AI Recruiter Built with n8n & Gemini",
+      "url": "https://www.behance.net/gallery/259082025/HireFast-AI-Recruiter-Built-with-n8n-Gemini",
+      "publishedOn": 1795709706,
+      "description": "HireFast is an AI recruiter for startups: it reads, scores and replies to every job applicant in seconds. Built in n8n with Google Gemini: a real form trigger, a prompt-injection guard, a 100-point rubric with validated JSON output, Switch routing, a Google Sheets CRM with live dashboard, personalized Gmail replies and a second AI agent that sends the founders a daily executive report. Results (45 candidates): 6 min to ~11 s per candidate, 100% response rate, 3/3 attacks blocked. Self-hosted on Docker. Team: Juan José Holguín, Francisco Madrid, Mariana Galvis, Pablo Tinoco · Universidad Icesi.",
+      "cover": "covers/259082025.webp"
+    },
     {
       "id": "258911583",
       "name": "LORE. Design System. A story worth keeping",
