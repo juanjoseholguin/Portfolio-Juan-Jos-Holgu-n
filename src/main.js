@@ -107,7 +107,7 @@ function render(profile, projects, featured) {
     <section class="chapter about" id="sobre-mi" data-pose>
       <div class="pin"><div class="copy fade">
         <div class="about-head">
-          <figure class="portrait"><img src="${import.meta.env.BASE_URL}juan.webp" alt="Portrait of Juan José Holguín" width="560" height="700" loading="lazy" /></figure>
+          <figure class="portrait"><img src="${import.meta.env.BASE_URL}juan-2026-11.webp" alt="Portrait of Juan José Holguín" width="560" height="700" loading="lazy" /></figure>
           <h2 class="section-title">About me</h2>
         </div>
         <p class="about-text">${esc(profile.about)}</p>
@@ -192,16 +192,21 @@ function scrollMapper() {
     },
     fadeCopy(y, reducedMotion) {
       const vh = window.innerHeight;
-      table.forEach(({ el, y: center, span }) => {
-        const copy = el.querySelector('.fade');
+      table.forEach((row) => {
+        row.copy ??= row.el.querySelector('.fade') || false;
+        const { copy, y: center, span } = row;
         if (!copy) return;
         const range = Math.max(span / 2, vh * 0.2);
         const d = (y - center) / range;
-        const opacity = Math.min(Math.max((1.12 - Math.abs(d)) / 0.42, 0), 1);
+        const opacity = Math.round(Math.min(Math.max((1.12 - Math.abs(d)) / 0.42, 0), 1) * 100) / 100;
+        const shift = reducedMotion || opacity === 0 ? 0 : Math.round(d * -22);
+        if (opacity === row.opacity && shift === row.shift) return;
+        row.opacity = opacity;
+        row.shift = shift;
         copy.style.opacity = opacity;
         copy.style.visibility = opacity < 0.01 ? 'hidden' : 'visible';
         copy.classList.toggle('in', opacity > 0.9);
-        if (!reducedMotion) copy.style.transform = `translateY(${d * -22}px)`;
+        copy.style.transform = `translate3d(0, ${shift}px, 0)`;
       });
     },
   };
@@ -358,7 +363,7 @@ async function start() {
     const y = window.scrollY;
     const dt = Math.min((now - previous) / 1000, 0.25);
     previous = now;
-    smooth += (y - smooth) * (reducedMotion ? 1 : 1 - Math.exp(-dt * 7));
+    smooth += (y - smooth) * (reducedMotion ? 1 : 1 - Math.exp(-dt * 9));
     if (Math.abs(y - smooth) < 0.05) smooth = y;
     mapper.fadeCopy(smooth, reducedMotion);
     currentK = mapper.toPose(smooth);

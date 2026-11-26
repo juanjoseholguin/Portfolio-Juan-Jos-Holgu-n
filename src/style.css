@@ -38,8 +38,8 @@ a { color: inherit; }
 main { position: relative; }
 
 .bar {
-  mix-blend-mode: difference;
   color: #fff;
+  text-shadow: 0 1px 10px rgb(0 0 0 / 0.7);
   position: fixed;
   z-index: 5;
   inset: 0 0 auto;
@@ -110,10 +110,9 @@ main { position: relative; }
   width: min(33vw, 27rem);
   padding: 18px 20px 22px;
   border-radius: 18px;
-  background: rgb(14 9 34 / 0.72);
+  background: rgb(14 9 34 / 0.88);
   border: 1px solid rgb(177 77 255 / 0.4);
   box-shadow: 0 0 40px rgb(122 43 255 / 0.25);
-  backdrop-filter: blur(10px);
 }
 .stop.right .pin { justify-content: flex-end; }
 .stop h3, .award h3 {
@@ -313,8 +312,8 @@ body[data-style='wire'] .stop .copy { background: rgb(8 6 15 / 0.9); border: 1px
 /* Luz que sigue al cursor */
 .cursor-glow {
   position: fixed; z-index: 3; left: 0; top: 0; width: 560px; height: 560px; border-radius: 50%;
-  background: radial-gradient(circle, rgb(177 77 255 / 0.28), transparent 62%);
-  mix-blend-mode: screen; pointer-events: none;
+  background: radial-gradient(circle, rgb(177 77 255 / 0.16), transparent 62%);
+  pointer-events: none; will-change: transform;
 }
 
 /* Capítulos 2D sobre el 3D */
@@ -370,7 +369,7 @@ body[data-style='wire'] .stop .copy { background: rgb(8 6 15 / 0.9); border: 1px
 .play-inner { max-width: 1200px; margin: 0 auto; }
 .play-lead { font-size: clamp(1.125rem, 1.7vw, 1.5rem); margin: 0.5em 0 0; }
 .play-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(16px, 2.5vw, 32px); margin-top: clamp(28px, 4vw, 52px); }
-.beat, .keepy { padding: clamp(16px, 2vw, 26px); border-radius: 24px; background: rgb(8 6 15 / 0.7); border: 1px solid rgb(255 255 255 / 0.16); backdrop-filter: blur(14px); min-width: 0; }
+.beat, .keepy { padding: clamp(16px, 2vw, 26px); border-radius: 24px; background: rgb(8 6 15 / 0.82); border: 1px solid rgb(255 255 255 / 0.16); min-width: 0; }
 .beat-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 16px; }
 .beat-head h3 { margin: 0; font: 700 clamp(1.5rem, 2.4vw, 2.25rem) / 1.1 var(--display); letter-spacing: -0.025em; }
 .beat-toggle { margin: 0; }

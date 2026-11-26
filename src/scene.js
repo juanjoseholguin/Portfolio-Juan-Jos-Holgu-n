@@ -297,7 +297,8 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   scene.add(ground);
 
   /* Tarjetas con las portadas de Behance */
-  const loader = new THREE.TextureLoader();
+  // Las portadas se decodifican fuera del hilo principal y se suben a la GPU apenas llegan.
+  const loader = new THREE.ImageBitmapLoader().setOptions({ imageOrientation: 'flipY' });
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
   const shape = roundedRect(CARD.w, CARD.h, 0.26);
   const frontGeo = new THREE.ShapeGeometry(shape, 12);
@@ -334,10 +335,13 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
       const front = card.children[0];
       const distance = Math.abs(k - 2 - index);
       const { project } = front.userData;
-      if (distance < 1.7 && !front.userData.cover && project.cover) {
+      if (distance < 2.6 && !front.userData.cover && project.cover) {
         front.userData.cover = 'loading';
-        loader.load(project.cover, (texture) => {
+        loader.load(project.cover, (bitmap) => {
+          const texture = new THREE.Texture(bitmap);
           texture.colorSpace = THREE.SRGBColorSpace;
+          texture.needsUpdate = true;
+          renderer.initTexture(texture);
           texture.anisotropy = LOW ? 2 : maxAniso;
           front.userData.cover = texture;
           front.material.map = texture;
@@ -569,7 +573,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     scene.fog.far = coarse ? 110 : 60;
     buildPoses(camera.aspect);
   }
-  let ratioCap = LOW ? 1.2 : 1.5;
+  let ratioCap = LOW ? 1.1 : 1.35;
   /* Estilos visuales: 3D, pixel, toon y wireframe */
   const pixelTarget = new THREE.WebGLRenderTarget(320, 190, {
     minFilter: THREE.NearestFilter,
@@ -683,12 +687,17 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   }
   let pointerSeen = false;
   const overUi = (target) => target?.closest?.('a, button, dialog, .bar');
+  // El rayo del cursor se lanza una vez por cuadro, no en cada movimiento del mouse.
+  let pickPending = false;
   window.addEventListener('pointermove', (e) => {
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
     pointerSeen = true;
-    hovered = e.pointerType === 'mouse' && !overUi(e.target) ? pick() : null;
-    document.body.style.cursor = hovered ? 'pointer' : '';
-  });
+    pickPending = e.pointerType === 'mouse' && !overUi(e.target);
+    if (!pickPending && hovered) {
+      hovered = null;
+      document.body.style.cursor = '';
+    }
+  }, { passive: true });
   window.addEventListener('click', (e) => {
     if (overUi(e.target)) return;
     pointer.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
@@ -716,8 +725,17 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
   let lastK = 0;
   let speed = 0;
 
+  const lookAtPointer = new THREE.Vector3();
   function render(k, level = 0) {
     updateCovers(k);
+    if (pickPending) {
+      pickPending = false;
+      const next = pick();
+      if (next !== hovered) {
+        hovered = next;
+        document.body.style.cursor = hovered ? 'pointer' : '';
+      }
+    }
     const dt = clock.getDelta();
     const time = reducedMotion ? 0 : clock.elapsedTime;
     const last = poses.length - 1;
@@ -794,8 +812,8 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
     }
     racer.rotation.y = turn;
     if (hero) {
-      const toCamera = new THREE.Vector3(pointer.x, pointer.y, 0);
-      hero.update({ dt, walk: raceK * 22, speed: onTrack ? speed : 0, look: toCamera, cheer, time });
+      lookAtPointer.set(pointer.x, pointer.y, 0);
+      hero.update({ dt, walk: raceK * 22, speed: onTrack ? speed : 0, look: lookAtPointer, cheer, time });
     }
 
     coinSpots.forEach((coin, index) => {
@@ -805,7 +823,7 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
         onCoin(coinsCollected);
       }
       if (coin.collected) coin.pop = Math.min(coin.pop + dt * 3, 1);
-      const p = track.getPoint((coin.at + 1) / (count + 1));
+      const p = (coin.point ??= track.getPoint((coin.at + 1) / (count + 1)));
       dummy.position.set(p.x, -0.42 + coin.pop * 1.4 + Math.sin(time * 2.4 + index) * 0.06, p.z - 1.6);
       dummy.rotation.set(Math.PI / 2, 0, time * 2.4 + index + coin.pop * 8);
       dummy.scale.setScalar(k > 1.3 && k < count + 2.2 ? 1 - coin.pop : 0.0001);
@@ -863,6 +881,23 @@ export function createScene(canvas, { projects, awards, links, skills, reducedMo
       renderer.render(scene, camera);
     }
   }
+
+  // Prepara los gráficos de cada estilo antes de que el recorrido los pida, para que el cambio no dé un tirón.
+  function warmUp() {
+    const current = styleName;
+    try {
+      for (const name of ['toon', 'pixel', '3d']) {
+        styleName = name;
+        applyStyle();
+        renderer.compile(scene, camera);
+      }
+      renderer.compile(quadScene, quadCamera);
+    } finally {
+      styleName = current;
+      applyStyle();
+    }
+  }
+  (window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1200)))(warmUp);
 
   // Si el equipo no da abasto, baja la calidad en lugar de ir a tirones.
   function lowerQuality() {

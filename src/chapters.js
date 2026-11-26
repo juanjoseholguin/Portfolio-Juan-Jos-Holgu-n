@@ -142,14 +142,7 @@ export function tvChapter() {
   </section>`;
 }
 
-const inView = (el) => {
-  const r = el.getBoundingClientRect();
-  return r.bottom > 0 && r.top < innerHeight;
-};
-const progress = (el) => {
-  const r = el.getBoundingClientRect();
-  return Math.min(Math.max(-r.top / Math.max(el.offsetHeight - innerHeight, 1), 0), 1);
-};
+import { inView, progress } from './layout.js';
 
 function initPencil() {
   const section = document.querySelector('.pencil');
@@ -455,10 +448,11 @@ function initGlow() {
   let gy = y;
   window.addEventListener('pointermove', (e) => { x = e.clientX; y = e.clientY; }, { passive: true });
   const loop = () => {
-    gx += (x - gx) * 0.09;
-    gy += (y - gy) * 0.09;
-    glow.style.transform = `translate(${gx - 280}px, ${gy - 280}px)`;
     requestAnimationFrame(loop);
+    if (Math.abs(x - gx) < 0.5 && Math.abs(y - gy) < 0.5) return;
+    gx += (x - gx) * 0.12;
+    gy += (y - gy) * 0.12;
+    glow.style.transform = `translate3d(${gx - 280}px, ${gy - 280}px, 0)`;
   };
   loop();
 }

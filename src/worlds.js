@@ -2,14 +2,7 @@ import { sfx } from './audio.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const esc = (v = '') => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const inView = (el) => {
-  const r = el.getBoundingClientRect();
-  return r.bottom > 0 && r.top < innerHeight;
-};
-const progress = (el) => {
-  const r = el.getBoundingClientRect();
-  return Math.min(Math.max(-r.top / Math.max(el.offsetHeight - innerHeight, 1), 0), 1);
-};
+import { inView, progress } from './layout.js';
 
 export function pixelChapter() {
   return `
